@@ -63,6 +63,7 @@ abstract class GenerateResourceExtensionsTask : DefaultTask() {
       valueResourceParser = ValueResourceParser(docBuilder),
       drawableResourceParser = DrawableResourceParser(docBuilder),
       packageName = input.packageName,
+      generateResourceProperties = input.generateResourceProperties,
       generateResourcesExtensions = input.generateResourcesExtensions,
       generateComposeExtensions = input.generateComposeExtensions,
       generateComposeAnimatedVectorExtensions = input.generateComposeAnimatedVectorExtensions,
@@ -70,6 +71,7 @@ abstract class GenerateResourceExtensionsTask : DefaultTask() {
   }
 
   data class TaskInput(
+    @Input val generateResourceProperties: Boolean,
     @Input val generateResourcesExtensions: Boolean,
     @Input val generateComposeExtensions: Boolean,
     @Input val generateComposeAnimatedVectorExtensions: Boolean,

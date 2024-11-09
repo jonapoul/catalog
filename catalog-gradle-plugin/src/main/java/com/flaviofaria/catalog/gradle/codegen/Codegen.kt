@@ -26,6 +26,7 @@ class Codegen(
   private val valueResourceParser: ValueResourceParser,
   private val drawableResourceParser: DrawableResourceParser,
   packageName: String,
+  private val generateResourceProperties: Boolean,
   private val generateResourcesExtensions: Boolean,
   private val generateComposeExtensions: Boolean,
   generateComposeAnimatedVectorExtensions: Boolean,
@@ -103,6 +104,7 @@ class Codegen(
           resources as List<Nothing>,
           sourceSetName,
           outputDir,
+          generateResourceProperties,
           generateResourcesExtensions,
           generateComposeExtensions,
         ) ?: error("Could not find resource writer for type $type")

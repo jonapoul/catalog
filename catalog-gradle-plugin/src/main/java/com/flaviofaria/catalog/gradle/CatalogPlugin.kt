@@ -61,6 +61,7 @@ class CatalogPlugin : Plugin<Project> {
 
       var sourceSetQualifier = SourceSetQualifier("main", SourceSetType.MAIN)
       val mainTaskProvider = project.getTaskProviderForSourceSet(
+        generateResourceProperties = catalogExtension.generateResourceProperties,
         generateResourcesExtensions = catalogExtension.generateResourcesExtensions,
         generateComposeExtensions = generateComposeExtensions,
         generateComposeAnimatedVectorExtensions = generateComposeAnimatedVectorExtensions,
@@ -72,6 +73,7 @@ class CatalogPlugin : Plugin<Project> {
       androidComponents.onVariants { variant ->
         sourceSetQualifier = SourceSetQualifier(variant.name, SourceSetType.VARIANT)
         val variantTaskProvider = project.getTaskProviderForSourceSet(
+          generateResourceProperties = catalogExtension.generateResourceProperties,
           generateResourcesExtensions = catalogExtension.generateResourcesExtensions,
           generateComposeExtensions = generateComposeExtensions,
           generateComposeAnimatedVectorExtensions = generateComposeAnimatedVectorExtensions,
@@ -82,6 +84,7 @@ class CatalogPlugin : Plugin<Project> {
         val buildTypeTaskProvider = variant.buildType?.let { buildType ->
           sourceSetQualifier = SourceSetQualifier(buildType, SourceSetType.BUILD_TYPE)
           project.getTaskProviderForSourceSet(
+            generateResourceProperties = catalogExtension.generateResourceProperties,
             generateResourcesExtensions = catalogExtension.generateResourcesExtensions,
             generateComposeExtensions = generateComposeExtensions,
             generateComposeAnimatedVectorExtensions = generateComposeAnimatedVectorExtensions,
@@ -95,6 +98,7 @@ class CatalogPlugin : Plugin<Project> {
         }?.let { flavorName ->
           sourceSetQualifier = SourceSetQualifier(flavorName, SourceSetType.FLAVOR)
           project.getTaskProviderForSourceSet(
+            generateResourceProperties = catalogExtension.generateResourceProperties,
             generateResourcesExtensions = catalogExtension.generateResourcesExtensions,
             generateComposeExtensions = generateComposeExtensions,
             generateComposeAnimatedVectorExtensions = generateComposeAnimatedVectorExtensions,
@@ -148,6 +152,7 @@ class CatalogPlugin : Plugin<Project> {
   }
 
   private fun Project.getTaskProviderForSourceSet(
+    generateResourceProperties: Boolean,
     generateResourcesExtensions: Boolean,
     generateComposeExtensions: Boolean,
     generateComposeAnimatedVectorExtensions: Boolean,
@@ -164,6 +169,7 @@ class CatalogPlugin : Plugin<Project> {
     ) { task ->
       task.initialize(
         GenerateResourceExtensionsTask.TaskInput(
+          generateResourceProperties = generateResourceProperties,
           generateResourcesExtensions = generateResourcesExtensions,
           generateComposeExtensions = generateComposeExtensions,
           generateComposeAnimatedVectorExtensions = generateComposeAnimatedVectorExtensions,

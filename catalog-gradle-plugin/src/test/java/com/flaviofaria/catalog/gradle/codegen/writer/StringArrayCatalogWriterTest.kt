@@ -59,6 +59,7 @@ class StringArrayCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = false,
     )
@@ -99,6 +100,7 @@ class StringArrayCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = true,
       generateComposeExtensions = false,
     )
@@ -165,6 +167,7 @@ class StringArrayCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = true,
     )
@@ -223,6 +226,7 @@ class StringArrayCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = true,
       generateComposeExtensions = true,
     )

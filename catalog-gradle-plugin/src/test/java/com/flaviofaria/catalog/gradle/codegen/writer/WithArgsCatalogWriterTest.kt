@@ -197,6 +197,7 @@ class WithArgsCatalogWriterTest {
       stringResources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = false,
     )
@@ -250,6 +251,7 @@ class WithArgsCatalogWriterTest {
       pluralResources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = false,
     )
@@ -303,6 +305,7 @@ class WithArgsCatalogWriterTest {
       stringResources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = true,
       generateComposeExtensions = false,
     )
@@ -417,6 +420,7 @@ class WithArgsCatalogWriterTest {
       pluralResources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = true,
       generateComposeExtensions = false,
     )
@@ -539,6 +543,7 @@ class WithArgsCatalogWriterTest {
       stringResources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = true,
     )
@@ -631,6 +636,7 @@ class WithArgsCatalogWriterTest {
       pluralResources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = true,
     )
@@ -733,6 +739,7 @@ class WithArgsCatalogWriterTest {
       stringResources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = true,
       generateComposeExtensions = true,
     )
@@ -885,6 +892,7 @@ class WithArgsCatalogWriterTest {
       pluralResources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = true,
       generateComposeExtensions = true,
     )

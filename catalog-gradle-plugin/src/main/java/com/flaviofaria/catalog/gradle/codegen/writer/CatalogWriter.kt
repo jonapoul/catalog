@@ -51,6 +51,7 @@ abstract class CatalogWriter<T : ResourceEntry>(
     resources: List<T>,
     sourceSetName: String,
     codegenDestination: File,
+    generateResourceProperties: Boolean,
     generateResourcesExtensions: Boolean,
     generateComposeExtensions: Boolean,
   ) {
@@ -58,7 +59,12 @@ abstract class CatalogWriter<T : ResourceEntry>(
       .addFileHeaders(sourceSetName)
       .apply {
         resources.forEach { resource ->
-          writeResource(resource, generateResourcesExtensions, generateComposeExtensions)
+          writeResource(
+            resource,
+            generateResourceProperties,
+            generateResourcesExtensions,
+            generateComposeExtensions,
+          )
         }
       }.build()
     file.writeTo(codegenDestination)
@@ -66,11 +72,14 @@ abstract class CatalogWriter<T : ResourceEntry>(
 
   private fun FileSpec.Builder.writeResource(
     resource: T,
+    generateResourceProperties: Boolean,
     generateResourcesExtensions: Boolean,
     generateComposeExtensions: Boolean,
   ) {
     try {
-      addResourceProperty(resourceType, resource, generateComposeExtensions)
+      if (generateResourceProperties) {
+        addResourceProperty(resourceType, resource, generateComposeExtensions)
+      }
       if (generateResourcesExtensions && shouldGenerateExtension(resource, false)) {
         buildExtensionMethod(this, resource, contextClass, asComposeExtensions = false)
         buildExtensionMethod(this, resource, fragmentClass, asComposeExtensions = false)

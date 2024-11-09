@@ -63,6 +63,7 @@ class DrawableCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = false,
     )
@@ -100,6 +101,7 @@ class DrawableCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = true,
       generateComposeExtensions = false,
     )
@@ -157,6 +159,7 @@ class DrawableCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = true,
     )
@@ -213,6 +216,7 @@ class DrawableCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = true,
     )
@@ -338,6 +342,7 @@ class DrawableCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = false,
       generateComposeExtensions = true,
     )
@@ -449,6 +454,7 @@ class DrawableCatalogWriterTest {
       resources,
       sourceSetName = "main",
       codegenDestination = codegenDestination,
+      generateResourceProperties = true,
       generateResourcesExtensions = true,
       generateComposeExtensions = true,
     )

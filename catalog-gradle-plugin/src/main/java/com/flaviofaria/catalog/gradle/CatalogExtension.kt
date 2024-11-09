@@ -16,6 +16,55 @@
 package com.flaviofaria.catalog.gradle
 
 open class CatalogExtension {
+  /**
+   * When true, Catalog will generate extension property getters to access resource IDs, like:
+   *
+   * ```kotlin
+   * @get:StringRes
+   * public inline val Strings.myTestString: Int
+   *   get() = R.string.my_test_string
+   * ```
+   */
+  var generateResourceProperties: Boolean = true
+
+  /**
+   * When true, Catalog will generate extension methods to access resource values. Example
+   * resource in `strings.xml`:
+   *
+   * ```xml
+   * <string name="my_test_string">Good morning, %1$s! It’s %2$d°C outside.</string>
+   * ```
+   *
+   * and the generated Kotlin code:
+   *
+   * ```kotlin
+   * context(Context)
+   * public inline val Strings.myTestString(arg1: String, arg2: Int): Int {
+   *   return getString(R.string.my_test_string, arg1, arg2)
+   * }
+   * ```
+   */
   var generateResourcesExtensions: Boolean = true
+
+  /**
+   * When true, Catalog will generate Composable extension methods to access resource values.
+   * If set to null, this property will be automatically enabled if the "androidx.compose.ui:ui"
+   * Maven artifact is found in this Gradle module's dependencies.
+   *
+   * Example resource in `strings.xml`:
+   *
+   * ```xml
+   * <string name="my_test_string">Good morning, %1$s! It’s %2$d°C outside.</string>
+   * ```
+   *
+   * and the generated Kotlin code:
+   *
+   * ```kotlin
+   * @Composable
+   * @ReadOnlyComposable
+   * public inline fun Strings.myTestResource(arg1: String, arg2: Int): CharSequence =
+   *     stringResource(R.string.my_test_string, arg1, arg2)
+   * ```
+   */
   var generateComposeExtensions: Boolean? = null
 }
