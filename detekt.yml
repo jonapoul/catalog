@@ -1,0 +1,4 @@
+---
+complexity:
+  LongMethod:
+    threshold: 100

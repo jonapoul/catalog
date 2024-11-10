@@ -1,29 +1,20 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath(libs.plugin.blueprint.core)
+    classpath(libs.plugin.blueprint.recipes)
+  }
+}
+
 plugins {
-  alias(libs.plugins.android.application) apply false
-  alias(libs.plugins.android.library) apply false
+  alias(libs.plugins.agp.app) apply false
+  alias(libs.plugins.detekt) apply false
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.kotlin.jvm) apply false
-  alias(libs.plugins.gradle.maven.publish) apply false
-}
-
-buildscript {
-  dependencies {
-    classpath(libs.kotlin.gradle.plugin)
-    classpath("com.flaviofaria.catalog:catalog-gradle-plugin")
-  }
-  repositories {
-    google()
-  }
-}
-
-repositories {
-  google()
-}
-
-subprojects {
-  tasks.withType<Test> {
-    testLogging {
-      events("passed", "skipped", "failed")
-    }
-  }
+  alias(libs.plugins.ktlint) apply false
+  alias(libs.plugins.publish) apply false
+  alias(libs.plugins.spotless) apply false
 }
