@@ -23,6 +23,7 @@ import com.flaviofaria.catalog.library.libraryStringArray
 import com.flaviofaria.catalog.runtime.resources.Colors
 import com.flaviofaria.catalog.runtime.resources.Dimens
 import com.flaviofaria.catalog.runtime.resources.Drawables
+import com.flaviofaria.catalog.runtime.resources.Integers
 import com.flaviofaria.catalog.runtime.resources.Plurals
 import com.flaviofaria.catalog.runtime.resources.StringArrays
 import com.flaviofaria.catalog.runtime.resources.Strings
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
       Plurals.somePlural(3, 1, 2)
       Colors.black()
       Dimens.margin()
+      Integers.numberOfWidgets()
       text = Strings.someOtherStringResource()
       setCompoundDrawablesRelativeWithIntrinsicBounds(
         Drawables.icLauncherForeground(),

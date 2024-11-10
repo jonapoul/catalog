@@ -18,6 +18,7 @@ package com.flaviofaria.catalog.gradle.codegen
 import com.flaviofaria.catalog.gradle.codegen.writer.ColorCatalogWriter
 import com.flaviofaria.catalog.gradle.codegen.writer.DimenCatalogWriter
 import com.flaviofaria.catalog.gradle.codegen.writer.DrawableCatalogWriter
+import com.flaviofaria.catalog.gradle.codegen.writer.IntegerCatalogWriter
 import com.flaviofaria.catalog.gradle.codegen.writer.StringArrayCatalogWriter
 import com.flaviofaria.catalog.gradle.codegen.writer.WithArgsCatalogWriter
 import java.io.File
@@ -50,6 +51,9 @@ class Codegen(
       packageName = packageName,
     ),
     ResourceEntry.XmlItem.Dimen::class to DimenCatalogWriter(
+      packageName = packageName,
+    ),
+    ResourceEntry.XmlItem.Integer::class to IntegerCatalogWriter(
       packageName = packageName,
     ),
     ResourceEntry.Drawable::class to DrawableCatalogWriter(

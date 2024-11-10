@@ -21,3 +21,4 @@ object Plurals
 object Colors
 object Dimens
 object Drawables
+object Integers

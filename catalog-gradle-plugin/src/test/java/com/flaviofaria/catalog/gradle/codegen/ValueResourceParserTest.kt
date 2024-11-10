@@ -50,6 +50,10 @@ class ValueResourceParserTest {
             |   <string name="unformatted_string" formatted="false">Some %1${'$'}f unformatted %2${'$'}s args %3${'$'}d</string>
             |   <string name="double_percent_symbol">Double %% symbol</string>
             |   <string name="escaped_percent_symbol">Escaped \% symbol</string>
+            |   <integer name="integer">12345</integer>
+            |   <integer name="negative_integer">-1</integer>
+            |   <!-- Here's a comment -->
+            |   <integer name="zero_with_comment">0</integer>
             |   <!-- there's no arg count validation, the only risk is going out of bounds -->
             |   <plurals name="some_plural">
             |       <item quantity="one">Single %1${'$'}d argument</item>
@@ -124,6 +128,21 @@ class ValueResourceParserTest {
         name = "escaped_percent_symbol",
         docs = null,
         args = emptyList(),
+      ),
+      ResourceEntry.XmlItem.Integer(
+        file = file,
+        name = "integer",
+        docs = null,
+      ),
+      ResourceEntry.XmlItem.Integer(
+        file = file,
+        name = "negative_integer",
+        docs = null,
+      ),
+      ResourceEntry.XmlItem.Integer(
+        file = file,
+        name = "zero_with_comment",
+        docs = "Here's a comment",
       ),
       ResourceEntry.XmlItem.WithArgs.Plural(
         file = file,

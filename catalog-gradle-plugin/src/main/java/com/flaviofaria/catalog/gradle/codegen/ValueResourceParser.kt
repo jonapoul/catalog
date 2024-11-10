@@ -15,13 +15,13 @@
  */
 package com.flaviofaria.catalog.gradle.codegen
 
+import org.w3c.dom.Comment
+import org.w3c.dom.Element
+import org.w3c.dom.Node
 import java.io.File
 import java.lang.Integer.max
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilder
-import org.w3c.dom.Comment
-import org.w3c.dom.Element
-import org.w3c.dom.Node
 
 class ValueResourceParser(private val docBuilder: DocumentBuilder) {
 
@@ -78,6 +78,13 @@ class ValueResourceParser(private val docBuilder: DocumentBuilder) {
             }
             "dimen" -> {
               ResourceEntry.XmlItem.Dimen(
+                file,
+                name,
+                preceedingComment,
+              )
+            }
+            "integer" -> {
+              ResourceEntry.XmlItem.Integer(
                 file,
                 name,
                 preceedingComment,

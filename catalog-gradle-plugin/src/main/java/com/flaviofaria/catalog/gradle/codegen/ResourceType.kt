@@ -52,4 +52,9 @@ enum class ResourceType(
     resourceGroup = "drawable",
     annotationClass = ClassName("androidx.annotation", "DrawableRes"),
   ),
+  Integer(
+    receiverType = "Integers",
+    resourceGroup = "integer",
+    annotationClass = ClassName("androidx.annotation", "IntegerRes"),
+  ),
 }

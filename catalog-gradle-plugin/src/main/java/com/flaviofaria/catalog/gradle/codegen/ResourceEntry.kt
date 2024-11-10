@@ -59,6 +59,12 @@ sealed interface ResourceEntry {
       override val name: String,
       override val docs: String?,
     ) : XmlItem
+
+    data class Integer(
+      override val file: File,
+      override val name: String,
+      override val docs: String?,
+    ) : XmlItem
   }
 
   data class Drawable(

@@ -33,6 +33,7 @@ import com.flaviofaria.catalog.library.libraryStringArray
 import com.flaviofaria.catalog.runtime.compose.Colors
 import com.flaviofaria.catalog.runtime.compose.Dimens
 import com.flaviofaria.catalog.runtime.compose.Drawables
+import com.flaviofaria.catalog.runtime.compose.Integers
 import com.flaviofaria.catalog.runtime.compose.Plurals
 import com.flaviofaria.catalog.runtime.compose.StringArrays
 import com.flaviofaria.catalog.runtime.compose.Strings
@@ -50,6 +51,7 @@ class MainActivity : ComponentActivity() {
       Plurals.somePlural(3, 1, 2)
       Colors.black()
       Dimens.margin()
+      Integers.numberOfWidgets()
       Column {
         Text(text = Strings.composable().toString())
         Icon(painter = Drawables.icLauncherForeground(), contentDescription = "")

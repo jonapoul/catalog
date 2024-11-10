@@ -20,6 +20,7 @@ import com.flaviofaria.catalog.gradle.codegen.ResourceType
 import com.flaviofaria.catalog.gradle.codegen.toCamelCase
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.ExperimentalKotlinPoetApi
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -154,4 +155,35 @@ abstract class CatalogWriter<T : ResourceEntry>(
     contextReceiver: TypeName?,
     asComposeExtensions: Boolean,
   ): FileSpec.Builder
+
+  protected fun FunSpec.Builder.optionallyAddKdoc(item: ResourceEntry.XmlItem): FunSpec.Builder {
+    item.docs?.let { addKdoc(it) }
+    return this
+  }
+
+  protected fun FunSpec.Builder.optionallyAddComposeAnnotations(addAnnotations: Boolean): FunSpec.Builder {
+    if (addAnnotations) {
+      addAnnotation(composableClass)
+      addAnnotation(readOnlyComposableClass)
+    }
+    return this
+  }
+
+  protected fun FunSpec.Builder.optionallyAddContextReceiver(receiver: TypeName?): FunSpec.Builder {
+    if (receiver != null) {
+      @OptIn(ExperimentalKotlinPoetApi::class)
+      contextReceivers(receiver)
+    }
+    return this
+  }
+
+  protected fun FunSpec.Builder.addReceiver(asComposeExtensions: Boolean): FunSpec.Builder {
+    return receiver(
+      if (asComposeExtensions) {
+        composeReceiverClass
+      } else {
+        resourcesReceiverClass
+      }
+    )
+  }
 }
