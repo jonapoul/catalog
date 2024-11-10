@@ -67,4 +67,10 @@ open class CatalogExtension {
    * ```
    */
   var generateComposeExtensions: Boolean? = null
+
+  /**
+   * If not explicitly set, this will be enabled if the "androidx.compose.animation:animation-graphics"
+   * maven artifact is found in this Gradle module's dependencies.
+   */
+  var generateComposeAnimatedVectorExtensions: Boolean? = null
 }

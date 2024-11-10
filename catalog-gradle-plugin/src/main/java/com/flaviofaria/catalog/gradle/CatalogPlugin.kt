@@ -50,14 +50,13 @@ class CatalogPlugin : Plugin<Project> {
         project.addRuntimeDependency("resources")
       }
       val generateComposeExtensions = catalogExtension.generateComposeExtensions
-        ?: project.dependsOn(group = "androidx.compose.ui", name= "ui")
+        ?: project.dependsOn(group = "androidx.compose.ui", name = "ui")
       if (generateComposeExtensions) {
         project.addRuntimeDependency("compose")
       }
-      val generateComposeAnimatedVectorExtensions = project.dependsOn(
-        group = "androidx.compose.animation",
-        name = "animation-graphics",
-      )
+      val generateComposeAnimatedVectorExtensions =
+        catalogExtension.generateComposeAnimatedVectorExtensions
+          ?: project.dependsOn(group = "androidx.compose.animation", name = "animation-graphics")
 
       var sourceSetQualifier = SourceSetQualifier("main", SourceSetType.MAIN)
       val mainTaskProvider = project.getTaskProviderForSourceSet(
