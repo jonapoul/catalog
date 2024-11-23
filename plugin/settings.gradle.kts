@@ -12,7 +12,6 @@ dependencyResolutionManagement {
     }
     gradlePluginPortal()
     mavenCentral()
-    mavenLocal()
   }
 
   versionCatalogs {

@@ -8,7 +8,6 @@ import blueprint.recipes.spotlessBlueprint
 buildscript {
   repositories {
     mavenCentral()
-    mavenLocal()
   }
 
   dependencies {
