@@ -4,7 +4,6 @@ package dev.jonpoulton.catalog.gradle.internal.writer
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -30,7 +29,6 @@ internal class DimenCatalogWriter(
       .getterBuilder()
       .addAnnotation(composableClass)
       .addAnnotation(readOnlyComposableClass)
-      .addModifiers(KModifier.INLINE)
       .addStatement(statementFormat, *statementArgs)
       .build()
 
