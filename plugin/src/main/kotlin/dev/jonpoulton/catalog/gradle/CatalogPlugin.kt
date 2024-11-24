@@ -98,6 +98,7 @@ class CatalogPlugin : Plugin<Project> {
             packageName = packageName,
             generateInternal = catalogExtension.generateInternal,
             typePrefix = catalogExtension.typePrefix.orEmpty(),
+            nameTransform = catalogExtension.nameTransform,
             parameterNaming = catalogExtension.parameterNaming,
             sourceSetDirs = sourceSetDirs,
             sourceSetQualifier = sourceSetQualifier,

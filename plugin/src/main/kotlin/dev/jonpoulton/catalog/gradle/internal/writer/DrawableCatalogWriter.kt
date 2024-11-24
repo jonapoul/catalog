@@ -13,7 +13,6 @@ import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry.Drawable.Type
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
-import dev.jonpoulton.catalog.gradle.internal.toCamelCase
 
 internal class DrawableCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
@@ -66,7 +65,7 @@ internal class DrawableCatalogWriter(
 
     return addProperty(
       PropertySpec
-        .builder(resource.name.toCamelCase(), returnType)
+        .builder(config.nameTransform(resource.name), returnType)
         .mutable(false)
         .addInternalIfConfigured()
         .apply { if (resource.type == Type.ANIMATED_VECTOR) addAnnotation(optInAnnotation) }

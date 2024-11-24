@@ -11,6 +11,7 @@
   <string name="double_percent_symbol">Double %% symbol</string>
   <string name="escaped_percent_symbol">Escaped \% symbol</string>
   <string name="composable">Composable string</string>
+  <string name="prefixed_string_resource_with_suffix">Prefixed string resource</string>
 
   <!-- there's no arg count validation, the only risk is going out of bounds -->
   <plurals name="some_plural">

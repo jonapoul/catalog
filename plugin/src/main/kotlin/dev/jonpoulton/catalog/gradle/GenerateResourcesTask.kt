@@ -50,6 +50,7 @@ abstract class GenerateResourcesTask : DefaultTask() {
         generateInternal = input.generateInternal,
         typePrefix = input.typePrefix,
         parameterNaming = input.parameterNaming,
+        nameTransform = input.nameTransform,
       ),
     ).start(input.sourceSetDirs, outputFolder.asFile.get())
   }
@@ -59,6 +60,7 @@ abstract class GenerateResourcesTask : DefaultTask() {
     @Input val generateInternal: Boolean,
     @Input val typePrefix: String,
     @Input val parameterNaming: CatalogParameterNaming,
+    @Internal val nameTransform: NameTransform,
     @Internal val sourceSetDirs: Set<File>,
     @Internal val sourceSetQualifier: SourceSetQualifier,
   )
@@ -68,5 +70,6 @@ abstract class GenerateResourcesTask : DefaultTask() {
     val generateInternal: Boolean,
     val typePrefix: String,
     val parameterNaming: CatalogParameterNaming,
+    val nameTransform: NameTransform,
   )
 }

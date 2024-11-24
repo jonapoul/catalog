@@ -18,15 +18,13 @@ open class CatalogExtension {
   var typePrefix: String? = null
 
   /**
+   * How to transform resource names into code. Defaults to camelcase, so "my_test_resource" is transformed to
+   * "myTestResource".
+   */
+  var nameTransform: NameTransform = NameTransform.CamelCase
+
+  /**
    * Defines the naming convention for string/plural resource parameters
    */
   var parameterNaming: CatalogParameterNaming = CatalogParameterNaming.ByType
-}
-
-enum class CatalogParameterNaming {
-  // Parameters named like "arg1", "arg2", "arg3"
-  Arg,
-
-  // Parameters named like "int1", "string2", "float3"
-  ByType,
 }

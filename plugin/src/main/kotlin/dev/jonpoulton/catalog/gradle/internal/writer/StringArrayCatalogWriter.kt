@@ -11,7 +11,6 @@ import com.squareup.kotlinpoet.asClassName
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
-import dev.jonpoulton.catalog.gradle.internal.toCamelCase
 
 internal class StringArrayCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
@@ -38,7 +37,7 @@ internal class StringArrayCatalogWriter(
 
     return addProperty(
       PropertySpec
-        .builder(resource.name.toCamelCase(), stringArrayType)
+        .builder(config.nameTransform(resource.name), stringArrayType)
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)

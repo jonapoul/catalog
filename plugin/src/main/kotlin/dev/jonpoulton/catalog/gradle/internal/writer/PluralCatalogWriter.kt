@@ -10,7 +10,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
-import dev.jonpoulton.catalog.gradle.internal.toCamelCase
 
 internal class PluralCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
@@ -41,7 +40,7 @@ internal class PluralCatalogWriter(
       .build()
 
     val function = FunSpec
-      .builder(resource.name.toCamelCase())
+      .builder(config.nameTransform(resource.name))
       .addKdoc(resource)
       .addAnnotation(annotation)
       .addAnnotation(composableClass)

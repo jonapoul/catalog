@@ -10,7 +10,6 @@ import com.squareup.kotlinpoet.asClassName
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
-import dev.jonpoulton.catalog.gradle.internal.toCamelCase
 
 internal class IntegerCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
@@ -33,7 +32,7 @@ internal class IntegerCatalogWriter(
 
     return addProperty(
       PropertySpec
-        .builder(resource.name.toCamelCase(), Int::class.asClassName())
+        .builder(config.nameTransform(resource.name), Int::class.asClassName())
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)

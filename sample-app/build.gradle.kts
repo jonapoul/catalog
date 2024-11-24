@@ -5,6 +5,7 @@ import blueprint.recipes.detektBlueprint
 import blueprint.recipes.kotlinJvmBlueprint
 import blueprint.recipes.ktlintBlueprint
 import blueprint.recipes.spotlessBlueprint
+import dev.jonpoulton.catalog.gradle.NameTransform
 
 plugins {
   alias(libs.plugins.agp.app)
@@ -17,6 +18,11 @@ catalog {
   packageName = null
   generateInternal = true
   typePrefix = "Sample"
+  nameTransform = NameTransform.chained(
+    NameTransform.removePrefix(prefix = "prefixed_"),
+    NameTransform.removeSuffix(suffix = "_with_suffix"),
+    NameTransform.CamelCase,
+  )
 }
 
 kotlinJvmBlueprint(libs.versions.kotlin)

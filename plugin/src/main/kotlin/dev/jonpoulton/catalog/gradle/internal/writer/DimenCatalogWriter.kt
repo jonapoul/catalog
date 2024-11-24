@@ -10,7 +10,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
-import dev.jonpoulton.catalog.gradle.internal.toCamelCase
 
 internal class DimenCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
@@ -34,7 +33,7 @@ internal class DimenCatalogWriter(
 
     return addProperty(
       PropertySpec
-        .builder(resource.name.toCamelCase(), composeDpClass)
+        .builder(config.nameTransform(resource.name), composeDpClass)
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)

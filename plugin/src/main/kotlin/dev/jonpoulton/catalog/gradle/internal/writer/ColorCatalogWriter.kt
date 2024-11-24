@@ -10,7 +10,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
-import dev.jonpoulton.catalog.gradle.internal.toCamelCase
 
 internal class ColorCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
@@ -23,7 +22,7 @@ internal class ColorCatalogWriter(
     resource: ResourceEntry.XmlItem.Color,
   ): TypeSpec.Builder = addProperty(
     PropertySpec
-      .builder(resource.name.toCamelCase(), composeColorClass)
+      .builder(config.nameTransform(resource.name), composeColorClass)
       .addKdoc(resource)
       .addInternalIfConfigured()
       .mutable(false)
