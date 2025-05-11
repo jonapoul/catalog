@@ -58,13 +58,13 @@ class CatalogPlugin : Plugin<Project> {
             )
           }
         variant.sources.java?.apply {
-          addGeneratedSourceDirectory(mainTaskProvider, GenerateResourcesTask::outputFolder)
-          addGeneratedSourceDirectory(variantTaskProvider, GenerateResourcesTask::outputFolder)
-          buildTypeTaskProvider?.let { addGeneratedSourceDirectory(it, GenerateResourcesTask::outputFolder) }
-          flavorTaskProvider?.let { addGeneratedSourceDirectory(it, GenerateResourcesTask::outputFolder) }
+          addGeneratedSourceDirectory(mainTaskProvider, GenerateResourcesTask::outputDirectory)
+          addGeneratedSourceDirectory(variantTaskProvider, GenerateResourcesTask::outputDirectory)
+          buildTypeTaskProvider?.let { addGeneratedSourceDirectory(it, GenerateResourcesTask::outputDirectory) }
+          flavorTaskProvider?.let { addGeneratedSourceDirectory(it, GenerateResourcesTask::outputDirectory) }
         }
-      }
-    }
+      } // onVariants
+    } // finalizeDsl
   }
 
   private fun AndroidSourceSet.readManifestPackageName(): String? {
@@ -91,7 +91,7 @@ class CatalogPlugin : Plugin<Project> {
       ?: error("Missing package name in manifest file for source set ${sourceSetQualifier.name}")
 
     val taskName = "generate${sourceSetQualifier.name.capitalize()}ResourceCatalog"
-    return runCatching { tasks.named(taskName, GenerateResourcesTask::class.java) }.getOrNull()
+    val provider = runCatching { tasks.named(taskName, GenerateResourcesTask::class.java) }.getOrNull()
       ?: tasks.register(taskName, GenerateResourcesTask::class.java) { task ->
         task.initialize(
           GenerateResourcesTask.TaskInput(
@@ -105,6 +105,14 @@ class CatalogPlugin : Plugin<Project> {
           ),
         )
       }
+
+    if (catalogExtension.generateAtSync && isGradleSync) {
+      afterEvaluate {
+        tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(provider)
+      }
+    }
+
+    return provider
   }
 
   /**
@@ -115,4 +123,7 @@ class CatalogPlugin : Plugin<Project> {
     sourceSets.getByName(sourceSetName).res.let { res ->
       (res as DefaultAndroidSourceDirectorySet).srcDirs
     }
+
+  private val isGradleSync: Boolean
+    get() = System.getProperty("idea.sync.active") == "true"
 }

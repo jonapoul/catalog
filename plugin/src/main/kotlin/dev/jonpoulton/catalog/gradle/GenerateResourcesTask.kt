@@ -4,24 +4,24 @@ import dev.jonpoulton.catalog.gradle.internal.Codegen
 import dev.jonpoulton.catalog.gradle.internal.DrawableResourceParser
 import dev.jonpoulton.catalog.gradle.internal.ValueResourceParser
 import dev.jonpoulton.catalog.gradle.internal.capitalize
-import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 @CacheableTask
-abstract class GenerateResourcesTask : DefaultTask() {
+abstract class GenerateResourcesTask : SourceTask() {
   @Nested
   lateinit var input: TaskInput
 
   @get:OutputDirectory
-  abstract val outputFolder: DirectoryProperty
+  abstract val outputDirectory: DirectoryProperty
 
   fun initialize(input: TaskInput) {
     this.input = input
@@ -29,13 +29,8 @@ abstract class GenerateResourcesTask : DefaultTask() {
       project.projectDir,
       "build/generated/kotlin/generate${input.sourceSetQualifier.name.capitalize()}Resources",
     )
-    input.sourceSetDirs.map { sourceSetDir ->
-      sourceSetDir.takeIf { it.exists() }?.apply {
-        inputs.dir(this)
-        outputs.dir(outputDir)
-        outputFolder.set(outputDir)
-      }
-    }
+    for (dir in input.sourceSetDirs) source(dir)
+    outputDirectory.set(outputDir)
   }
 
   @TaskAction
@@ -52,7 +47,7 @@ abstract class GenerateResourcesTask : DefaultTask() {
         parameterNaming = input.parameterNaming,
         nameTransform = input.nameTransform,
       ),
-    ).start(input.sourceSetDirs, outputFolder.asFile.get())
+    ).start(input.sourceSetDirs, outputDirectory.asFile.get())
   }
 
   data class TaskInput(

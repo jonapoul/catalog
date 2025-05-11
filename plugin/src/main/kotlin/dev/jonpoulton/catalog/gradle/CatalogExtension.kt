@@ -2,6 +2,11 @@ package dev.jonpoulton.catalog.gradle
 
 open class CatalogExtension {
   /**
+   * When true, code generation will run during IDE sync as well as during regular build.
+   */
+  var generateAtSync: Boolean = false
+
+  /**
    * Package name of the generated resource accessor classes. Defaults to your project's namespace.
    */
   var packageName: String? = null

@@ -16,6 +16,7 @@ plugins {
 
 catalog {
   packageName = null
+  generateAtSync = true
   generateInternal = true
   typePrefix = "Sample"
   nameTransform = NameTransform.chained(
