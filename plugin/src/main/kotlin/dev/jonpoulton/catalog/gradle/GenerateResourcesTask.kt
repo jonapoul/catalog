@@ -35,6 +35,9 @@ abstract class GenerateResourcesTask : SourceTask() {
 
   @TaskAction
   fun action() {
+    val outputDirectory = outputDirectory.asFile.get()
+    if (outputDirectory.exists()) outputDirectory.deleteRecursively()
+
     val docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
 
     Codegen(
@@ -47,7 +50,7 @@ abstract class GenerateResourcesTask : SourceTask() {
         parameterNaming = input.parameterNaming,
         nameTransform = input.nameTransform,
       ),
-    ).start(input.sourceSetDirs, outputDirectory.asFile.get())
+    ).start(input.sourceSetDirs, outputDirectory)
   }
 
   data class TaskInput(
