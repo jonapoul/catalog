@@ -34,7 +34,7 @@ jobs:
       - name: Get Gradle version
         id: gradle-version
         run: |
-          GRADLE_VERSION=$(cat plugin/gradle.properties | grep VERSION_NAME | cut -d "=" -f 2)
+          GRADLE_VERSION=$(cat gradle.properties | grep VERSION_NAME | cut -d "=" -f 2)
           echo "GRADLE_VERSION=$GRADLE_VERSION"
           echo "version=$GRADLE_VERSION" >> $GITHUB_OUTPUT
 
@@ -74,7 +74,7 @@ jobs:
           cache-read-only: false
 
       - name: Assemble
-        run: ./gradlew plugin:assemble
+        run: ./gradlew assemble
 
       - name: Publish
         env:
@@ -82,7 +82,7 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_IN_MEMORY_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_KEY_PASSWORD }}
-        run: ./gradlew plugin:publish
+        run: ./gradlew publish
 
       - name: Create release
         uses: ncipollo/release-action@v1

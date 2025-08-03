@@ -2,20 +2,28 @@
 
 pluginManagement {
   repositories {
+    google {
+      mavenContent {
+        includeGroupByRegex(".*android.*")
+        includeGroupByRegex(".*google.*")
+      }
+    }
     gradlePluginPortal()
     mavenCentral()
-    google()
   }
 }
 
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
+    google {
+      mavenContent {
+        includeGroupByRegex(".*android.*")
+        includeGroupByRegex(".*google.*")
+      }
+    }
     mavenCentral()
-    google()
   }
 }
 
-includeBuild("plugin")
-
-include(":sample-app")
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
