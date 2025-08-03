@@ -1,23 +1,24 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "unused")
 
 package dev.jonpoulton.catalog.gradle
 
-import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
-import com.android.build.gradle.internal.api.DefaultAndroidSourceFile
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.withType
 import java.io.File
-import javax.xml.parsers.DocumentBuilderFactory
 
 class CatalogPlugin : Plugin<Project> {
   override fun apply(project: Project) = with(project) {
-    val catalogExtension = extensions.create("catalog", CatalogExtension::class.java)
+    val catalogExtension = extensions.create<CatalogExtension>("catalog")
 
-    val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
+    val androidComponents = extensions.getByType(AndroidComponentsExtension::class)
     androidComponents.finalizeDsl { commonExtension ->
       var sourceSetQualifier = SourceSetQualifier("main", SourceSetType.MAIN)
       val mainTaskProvider = getTaskProviderForSourceSet(
@@ -68,21 +69,9 @@ class CatalogPlugin : Plugin<Project> {
     afterEvaluate {
       // Add a wrapper task
       val taskName = GenerateResourcesTask.taskName(qualifier = "")
-      tasks.register(taskName) { task ->
-        task.dependsOn(tasks.withType(GenerateResourcesTask::class.java))
+      tasks.register(taskName) {
+        dependsOn(tasks.withType<GenerateResourcesTask>())
       }
-    }
-  }
-
-  private fun AndroidSourceSet.readManifestPackageName(): String? {
-    val manifestFile = (manifest as DefaultAndroidSourceFile).srcFile
-    return if (manifestFile.exists()) {
-      val docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-      val doc = docBuilder.parse(manifestFile)
-      val manifestRoot = doc.getElementsByTagName("manifest").item(0)
-      manifestRoot.attributes.getNamedItem("package")?.nodeValue
-    } else {
-      null
     }
   }
 
@@ -92,29 +81,19 @@ class CatalogPlugin : Plugin<Project> {
     sourceSetDirs: Set<File>,
     sourceSetQualifier: SourceSetQualifier,
   ): TaskProvider<GenerateResourcesTask> {
-    val packageName = catalogExtension.packageName
-      ?: commonExtension.namespace
-      ?: commonExtension.sourceSets.findByName(sourceSetQualifier.name)?.readManifestPackageName()
-      ?: error("Missing package name in manifest file for source set ${sourceSetQualifier.name}")
-
     val taskName = GenerateResourcesTask.taskName(sourceSetQualifier.name)
-    val provider = runCatching { tasks.named(taskName, GenerateResourcesTask::class.java) }.getOrNull()
-      ?: tasks.register(taskName, GenerateResourcesTask::class.java) { task ->
-        task.initialize(
-          GenerateResourcesTask.TaskInput(
-            packageName = packageName,
-            generateInternal = catalogExtension.generateInternal,
-            typePrefix = catalogExtension.typePrefix.orEmpty(),
-            nameTransform = catalogExtension.nameTransform,
-            parameterNaming = catalogExtension.parameterNaming,
-            sourceSetDirs = sourceSetDirs,
-            sourceSetQualifier = sourceSetQualifier,
-          ),
-        )
-      }
+    val provider = runCatching { tasks.named<GenerateResourcesTask>(taskName) }.getOrNull()
+      ?: GenerateResourcesTask.register(
+        target = this,
+        taskName = taskName,
+        catalogExtension = catalogExtension,
+        commonExtension = commonExtension,
+        sourceSetDirs = sourceSetDirs,
+        sourceSetQualifier = sourceSetQualifier,
+      )
 
     afterEvaluate {
-      if (catalogExtension.generateAtSync && isGradleSync) {
+      if (catalogExtension.generateAtSync.get() && isGradleSync) {
         tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(provider)
       }
     }

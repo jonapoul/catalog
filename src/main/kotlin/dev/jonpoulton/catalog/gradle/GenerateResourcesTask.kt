@@ -1,37 +1,36 @@
 package dev.jonpoulton.catalog.gradle
 
+import com.android.build.api.dsl.CommonExtension
 import dev.jonpoulton.catalog.gradle.internal.Codegen
 import dev.jonpoulton.catalog.gradle.internal.DrawableResourceParser
 import dev.jonpoulton.catalog.gradle.internal.ValueResourceParser
 import dev.jonpoulton.catalog.gradle.internal.capitalize
+import dev.jonpoulton.catalog.gradle.internal.readManifestPackageName
+import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.register
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 @CacheableTask
 abstract class GenerateResourcesTask : SourceTask() {
-  @Nested
-  lateinit var input: TaskInput
-
-  @get:OutputDirectory
-  abstract val outputDirectory: DirectoryProperty
-
-  fun initialize(input: TaskInput) {
-    this.input = input
-    val outputDir = File(
-      project.projectDir,
-      "build/generated/kotlin/generate${input.sourceSetQualifier.name.capitalize()}Resources",
-    )
-    for (dir in input.sourceSetDirs) source(dir)
-    outputDirectory.set(outputDir)
-  }
+  @get:[Input Optional] abstract val packageName: Property<String>
+  @get:[Input Optional] abstract val typePrefix: Property<String>
+  @get:Input abstract val generateInternal: Property<Boolean>
+  @get:Input abstract val parameterNaming: Property<CatalogParameterNaming>
+  @get:Internal abstract val nameTransform: Property<NameTransform>
+  @get:Internal abstract val sourceSetDirs: SetProperty<File>
+  @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
 
   @TaskAction
   fun action() {
@@ -44,24 +43,14 @@ abstract class GenerateResourcesTask : SourceTask() {
       valueResourceParser = ValueResourceParser(docBuilder),
       drawableResourceParser = DrawableResourceParser(docBuilder),
       config = TaskConfig(
-        packageName = input.packageName,
-        generateInternal = input.generateInternal,
-        typePrefix = input.typePrefix,
-        parameterNaming = input.parameterNaming,
-        nameTransform = input.nameTransform,
+        packageName = packageName.get(),
+        generateInternal = generateInternal.get(),
+        typePrefix = typePrefix.get(),
+        parameterNaming = parameterNaming.get(),
+        nameTransform = nameTransform.get(),
       ),
-    ).start(input.sourceSetDirs, outputDirectory)
+    ).start(sourceSetDirs.get(), outputDirectory)
   }
-
-  data class TaskInput(
-    @Input val packageName: String,
-    @Input val generateInternal: Boolean,
-    @Input val typePrefix: String,
-    @Input val parameterNaming: CatalogParameterNaming,
-    @Internal val nameTransform: NameTransform,
-    @Internal val sourceSetDirs: Set<File>,
-    @Internal val sourceSetQualifier: SourceSetQualifier,
-  )
 
   data class TaskConfig(
     val packageName: String,
@@ -73,5 +62,33 @@ abstract class GenerateResourcesTask : SourceTask() {
 
   companion object {
     fun taskName(qualifier: String): String = "generate${qualifier.capitalize()}ResourceCatalog"
+
+    fun register(
+      target: Project,
+      taskName: String,
+      catalogExtension: CatalogExtension,
+      commonExtension: CommonExtension<*, *, *, *, *, *>,
+      sourceSetDirs: Set<File>,
+      sourceSetQualifier: SourceSetQualifier,
+    ): TaskProvider<GenerateResourcesTask> {
+      val name = sourceSetQualifier.name
+      val packageName = catalogExtension.packageName.orNull
+        ?: commonExtension.namespace
+        ?: commonExtension.sourceSets.findByName(name)?.readManifestPackageName()
+        ?: error("Missing package name in manifest file for source set $name")
+
+      return target.tasks.register<GenerateResourcesTask>(taskName) {
+        this.packageName.set(packageName)
+        this.generateInternal.set(catalogExtension.generateInternal)
+        this.typePrefix.set(catalogExtension.typePrefix.orNull.orEmpty())
+        this.nameTransform.set(catalogExtension.nameTransform)
+        this.parameterNaming.set(catalogExtension.parameterNaming)
+        this.sourceSetDirs.set(sourceSetDirs)
+        this.outputDirectory.set(
+          target.projectDir.resolve("build/generated/kotlin/generate${name.capitalize()}Resources"),
+        )
+        for (dir in sourceSetDirs) source(dir)
+      }
+    }
   }
 }
