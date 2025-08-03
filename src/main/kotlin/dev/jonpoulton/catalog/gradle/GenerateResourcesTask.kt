@@ -70,4 +70,8 @@ abstract class GenerateResourcesTask : SourceTask() {
     val parameterNaming: CatalogParameterNaming,
     val nameTransform: NameTransform,
   )
+
+  companion object {
+    fun taskName(qualifier: String): String = "generate${qualifier.capitalize()}ResourceCatalog"
+  }
 }

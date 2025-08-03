@@ -7,7 +7,6 @@ import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
 import com.android.build.gradle.internal.api.DefaultAndroidSourceFile
-import dev.jonpoulton.catalog.gradle.internal.capitalize
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskProvider
@@ -65,6 +64,14 @@ class CatalogPlugin : Plugin<Project> {
         }
       } // onVariants
     } // finalizeDsl
+
+    afterEvaluate {
+      // Add a wrapper task
+      val taskName = GenerateResourcesTask.taskName(qualifier = "")
+      tasks.register(taskName) { task ->
+        task.dependsOn(tasks.withType(GenerateResourcesTask::class.java))
+      }
+    }
   }
 
   private fun AndroidSourceSet.readManifestPackageName(): String? {
@@ -90,7 +97,7 @@ class CatalogPlugin : Plugin<Project> {
       ?: commonExtension.sourceSets.findByName(sourceSetQualifier.name)?.readManifestPackageName()
       ?: error("Missing package name in manifest file for source set ${sourceSetQualifier.name}")
 
-    val taskName = "generate${sourceSetQualifier.name.capitalize()}ResourceCatalog"
+    val taskName = GenerateResourcesTask.taskName(sourceSetQualifier.name)
     val provider = runCatching { tasks.named(taskName, GenerateResourcesTask::class.java) }.getOrNull()
       ?: tasks.register(taskName, GenerateResourcesTask::class.java) { task ->
         task.initialize(
