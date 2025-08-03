@@ -106,8 +106,8 @@ class CatalogPlugin : Plugin<Project> {
         )
       }
 
-    if (catalogExtension.generateAtSync && isGradleSync) {
-      afterEvaluate {
+    afterEvaluate {
+      if (catalogExtension.generateAtSync && isGradleSync) {
         tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(provider)
       }
     }
