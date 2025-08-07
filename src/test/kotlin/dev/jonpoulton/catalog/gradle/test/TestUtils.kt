@@ -15,6 +15,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 internal const val ANDROID_TASK_NAME = "generateMainResourceCatalog"
+internal const val KMP_TASK_NAME = "generateCommonMainResourceCatalog"
 
 internal fun StringSubject.isEqualToKotlin(
   @Language("kotlin") code: String,
@@ -51,6 +52,13 @@ internal fun File.writeAndroidStringsFile(
   .also { it.parentFile.mkdirs() }
   .writeText(code)
 
+internal fun File.writeKmpStringsFile(
+  @Language("xml") code: String,
+  name: String = "strings.xml",
+) = resolve("src/commonMain/composeResources/values/$name")
+  .also { it.parentFile.mkdirs() }
+  .writeText(code)
+
 @Deprecated(message = "Needs at least one param", level = DeprecationLevel.ERROR)
 internal fun Project.runGradleTask(): Unit = error("Not supported")
 
@@ -66,7 +74,6 @@ internal fun runTask(root: File, task: String): GradleRunner = buildRunner(root)
 internal fun GradleRunner.runTask(task: String): GradleRunner = withArguments(
   task,
   "--configuration-cache",
-  "--info",
   "--stacktrace",
   "-Pandroid.useAndroidX=true", // needed for android builds to work, unused otherwise
 )

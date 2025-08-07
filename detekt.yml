@@ -2,3 +2,5 @@
 complexity:
   LongMethod:
     threshold: 100
+  LongParameterList:
+    functionThreshold: 10

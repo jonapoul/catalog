@@ -5,6 +5,7 @@ import dev.jonpoulton.catalog.gradle.CatalogParameterNaming
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.NameTransform
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
+import dev.jonpoulton.catalog.gradle.internal.rClass
 import dev.jonpoulton.catalog.gradle.test.isEqualToKotlin
 import org.junit.Before
 import org.junit.Rule
@@ -38,6 +39,10 @@ class DimenCatalogWriterTest {
       prefix,
       parameterNaming,
       nameTransform,
+      resClass = rClass(packageName),
+      composableResourceAccessorPackage = "androidx.compose.ui.res",
+      pluralAccessorIsExperimental = true,
+      useReadOnlyComposable = true,
     ),
   )
 

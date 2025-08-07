@@ -4,7 +4,6 @@ package dev.jonpoulton.catalog.gradle.internal.writer
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
@@ -15,7 +14,7 @@ internal class ColorCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
   override val resourceType: ResourceType = ResourceType.Color,
 ) : CatalogWriter<ResourceEntry.XmlItem.Color>() {
-  private val colorResourceMember = MemberName("androidx.compose.ui.res", "colorResource")
+  private val colorResourceMember by lazy { resourceAccessor("colorResource") }
   private val composeColorClass = ClassName("androidx.compose.ui.graphics", "Color")
 
   override fun TypeSpec.Builder.addResource(
@@ -36,7 +35,7 @@ internal class ColorCatalogWriter(
     return FunSpec
       .getterBuilder()
       .addAnnotation(composableClass)
-      .addAnnotation(readOnlyComposableClass)
+      .addReadOnlyComposable(config)
       .addStatement(statementFormat, *statementArgs)
       .build()
   }

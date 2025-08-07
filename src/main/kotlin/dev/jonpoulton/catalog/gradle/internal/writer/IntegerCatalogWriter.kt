@@ -3,7 +3,6 @@
 package dev.jonpoulton.catalog.gradle.internal.writer
 
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
@@ -15,7 +14,7 @@ internal class IntegerCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
   override val resourceType: ResourceType = ResourceType.Integer,
 ) : CatalogWriter<ResourceEntry.XmlItem.Integer>() {
-  private val integerResourceMember = MemberName("androidx.compose.ui.res", "integerResource")
+  private val integerResourceMember by lazy { resourceAccessor("integerResource") }
 
   override fun TypeSpec.Builder.addResource(
     resource: ResourceEntry.XmlItem.Integer,
@@ -26,7 +25,7 @@ internal class IntegerCatalogWriter(
     val getter = FunSpec
       .getterBuilder()
       .addAnnotation(composableClass)
-      .addAnnotation(readOnlyComposableClass)
+      .addReadOnlyComposable(config)
       .addStatement(statementFormat, *statementArgs)
       .build()
 

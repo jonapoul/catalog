@@ -1,8 +1,10 @@
 package dev.jonpoulton.catalog.gradle.internal
 
+import kotlin.String as KotlinString
+
 internal enum class ResourceType(
-  val receiverType: kotlin.String,
-  val resourceGroup: kotlin.String,
+  val receiverType: KotlinString,
+  val resourceGroup: KotlinString,
 ) {
   String(
     receiverType = "Strings",

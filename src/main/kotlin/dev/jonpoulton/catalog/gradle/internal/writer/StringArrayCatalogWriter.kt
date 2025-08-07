@@ -3,7 +3,6 @@
 package dev.jonpoulton.catalog.gradle.internal.writer
 
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -16,7 +15,7 @@ internal class StringArrayCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
   override val resourceType: ResourceType = ResourceType.StringArray,
 ) : CatalogWriter<ResourceEntry.XmlItem.StringArray>() {
-  private val stringArrayResourceMember = MemberName("androidx.compose.ui.res", "stringArrayResource")
+  private val stringArrayResourceMember by lazy { resourceAccessor("stringArrayResource") }
 
   override fun TypeSpec.Builder.addResource(
     resource: ResourceEntry.XmlItem.StringArray,
@@ -31,7 +30,7 @@ internal class StringArrayCatalogWriter(
     val getter = FunSpec
       .getterBuilder()
       .addAnnotation(composableClass)
-      .addAnnotation(readOnlyComposableClass)
+      .addReadOnlyComposable(config)
       .addStatement(statementFormat, *statementArgs)
       .build()
 

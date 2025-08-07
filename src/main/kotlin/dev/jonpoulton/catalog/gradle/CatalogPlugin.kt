@@ -1,63 +1,125 @@
-@file:Suppress("UnstableApiUsage", "unused")
+@file:Suppress("UnstableApiUsage")
 
 package dev.jonpoulton.catalog.gradle
 
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
+import dev.jonpoulton.catalog.gradle.internal.taskName
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.compose.resources.ResourcesExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import java.io.File
 
+@Suppress("unused")
 class CatalogPlugin : Plugin<Project> {
-  override fun apply(project: Project) = with(project) {
+  override fun apply(project: Project): Unit = with(project) {
     val catalogExtension = extensions.create<CatalogExtension>("catalog")
 
+    with(pluginManager) {
+      withPlugin("org.jetbrains.kotlin.android") {
+        applyAndroid(catalogExtension)
+      }
+
+      withPlugin("org.jetbrains.kotlin.jvm") {
+        error("JVM builds aren't supported yet!")
+      }
+
+      withPlugin("org.jetbrains.kotlin.multiplatform") {
+        withPlugin("org.jetbrains.compose") {
+          applyKmp(catalogExtension)
+        }
+      }
+    }
+
+    val catalogTasks = tasks.withType<GenerateResourcesTask>()
+
+    // Run before any kotlin compilation
+    tasks.withType(AbstractKotlinCompile::class).configureEach {
+      dependsOn(catalogTasks)
+    }
+
+    // Add a wrapper task
+    val wrapper = tasks.register(taskName(qualifier = "")) {
+      dependsOn(catalogTasks)
+    }
+
+    afterEvaluate {
+      if (catalogExtension.generateAtSync.get() && isGradleSync) {
+        tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(wrapper)
+      }
+    }
+  }
+
+  private fun Project.applyKmp(catalogExtension: CatalogExtension) {
+    val resourcesExtension = extensions
+      .getByType<ComposeExtension>()
+      .extensions
+      .getByType<ResourcesExtension>()
+
+    extensions.getByType<KotlinMultiplatformExtension>().sourceSets.getByName("commonMain") {
+      val taskName = taskName(qualifier = name)
+
+      val task = GenerateKmpResourcesTask.register(
+        target = this@applyKmp,
+        taskName = taskName,
+        catalogExtension = catalogExtension,
+        resourcesExtension = resourcesExtension,
+        sourceSetDirs = setOf(file("src/$name/composeResources")),
+        sourceSetName = name,
+        androidPackageName = androidPackageNameOrNull(),
+      )
+
+      kotlin.srcDir(task.map { t -> t.outputDirectory })
+    }
+  }
+
+  private fun Project.applyAndroid(catalogExtension: CatalogExtension) {
     val androidComponents = extensions.getByType(AndroidComponentsExtension::class)
     androidComponents.finalizeDsl { commonExtension ->
-      var sourceSetQualifier = SourceSetQualifier("main", SourceSetType.MAIN)
       val mainTaskProvider = getTaskProviderForSourceSet(
         catalogExtension = catalogExtension,
         commonExtension = commonExtension,
         sourceSetDirs = commonExtension.getQualifiedSourceSetsByName(sourceSetName = "main"),
-        sourceSetQualifier = sourceSetQualifier,
+        sourceSetName = "main",
       )
 
       androidComponents.onVariants { variant ->
-        sourceSetQualifier = SourceSetQualifier(variant.name, SourceSetType.VARIANT)
         val variantTaskProvider = getTaskProviderForSourceSet(
           catalogExtension = catalogExtension,
           commonExtension = commonExtension,
           sourceSetDirs = commonExtension.getQualifiedSourceSetsByName(variant.name),
-          sourceSetQualifier = sourceSetQualifier,
+          sourceSetName = variant.name,
         )
         val buildTypeTaskProvider = variant.buildType?.let { buildType ->
-          sourceSetQualifier = SourceSetQualifier(buildType, SourceSetType.BUILD_TYPE)
           getTaskProviderForSourceSet(
             catalogExtension = catalogExtension,
             commonExtension = commonExtension,
             sourceSetDirs = commonExtension.getQualifiedSourceSetsByName(buildType),
-            sourceSetQualifier = sourceSetQualifier,
+            sourceSetName = buildType,
           )
         }
         val flavorTaskProvider = variant
           .flavorName
           .takeUnless { it?.isEmpty() == true } // build variants come with a "" flavor
           ?.let { flavorName ->
-            sourceSetQualifier = SourceSetQualifier(flavorName, SourceSetType.FLAVOR)
             getTaskProviderForSourceSet(
               catalogExtension = catalogExtension,
               commonExtension = commonExtension,
               sourceSetDirs = commonExtension.getQualifiedSourceSetsByName(flavorName),
-              sourceSetQualifier = sourceSetQualifier,
+              sourceSetName = flavorName,
             )
           }
-        variant.sources.java?.apply {
+        variant.sources.kotlin?.apply {
           addGeneratedSourceDirectory(mainTaskProvider, GenerateResourcesTask::outputDirectory)
           addGeneratedSourceDirectory(variantTaskProvider, GenerateResourcesTask::outputDirectory)
           buildTypeTaskProvider?.let { addGeneratedSourceDirectory(it, GenerateResourcesTask::outputDirectory) }
@@ -65,40 +127,24 @@ class CatalogPlugin : Plugin<Project> {
         }
       } // onVariants
     } // finalizeDsl
-
-    afterEvaluate {
-      // Add a wrapper task
-      val taskName = GenerateResourcesTask.taskName(qualifier = "")
-      tasks.register(taskName) {
-        dependsOn(tasks.withType<GenerateResourcesTask>())
-      }
-    }
   }
 
   private fun Project.getTaskProviderForSourceSet(
     catalogExtension: CatalogExtension,
     commonExtension: CommonExtension<*, *, *, *, *, *>,
     sourceSetDirs: Set<File>,
-    sourceSetQualifier: SourceSetQualifier,
-  ): TaskProvider<GenerateResourcesTask> {
-    val taskName = GenerateResourcesTask.taskName(sourceSetQualifier.name)
-    val provider = runCatching { tasks.named<GenerateResourcesTask>(taskName) }.getOrNull()
-      ?: GenerateResourcesTask.register(
+    sourceSetName: String,
+  ): TaskProvider<GenerateAndroidResourcesTask> {
+    val taskName = taskName(sourceSetName)
+    return runCatching { tasks.named<GenerateAndroidResourcesTask>(taskName) }.getOrNull()
+      ?: GenerateAndroidResourcesTask.register(
         target = this,
         taskName = taskName,
         catalogExtension = catalogExtension,
         commonExtension = commonExtension,
         sourceSetDirs = sourceSetDirs,
-        sourceSetQualifier = sourceSetQualifier,
+        sourceSetName = sourceSetName,
       )
-
-    afterEvaluate {
-      if (catalogExtension.generateAtSync.get() && isGradleSync) {
-        tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(provider)
-      }
-    }
-
-    return provider
   }
 
   /**
@@ -112,4 +158,12 @@ class CatalogPlugin : Plugin<Project> {
 
   private val isGradleSync: Boolean
     get() = System.getProperty("idea.sync.active") == "true"
+
+  @Suppress("TooGenericExceptionCaught", "SwallowedException")
+  private fun Project.androidPackageNameOrNull(): Provider<String> = try {
+    val ext = extensions.getByType(CommonExtension::class)
+    provider { ext.namespace }
+  } catch (e: Exception) {
+    provider { error("No android plugin was applied to $path - can't find package name!") }
+  }
 }

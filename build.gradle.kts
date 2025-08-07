@@ -41,9 +41,13 @@ detektBlueprint(
 
 gradlePlugin {
   plugins {
-    create("catalog") {
+    create("catalog-deprecated") {
       id = "dev.jonpoulton.catalog"
       implementationClass = "dev.jonpoulton.catalog.gradle.CatalogPlugin"
+    }
+    create("catalog-android") {
+      id = "dev.jonpoulton.catalog.android"
+      implementationClass = "dev.jonpoulton.catalog.gradle.CatalogAndroidPlugin"
     }
   }
 }
@@ -62,15 +66,20 @@ tasks.pluginUnderTestMetadata {
 
 dependencies {
   compileOnly(libs.plugin.agp)
+  compileOnly(libs.plugin.compose)
   compileOnly(libs.plugin.kotlin)
+  compileOnly(libs.plugin.kotlinCompose)
+
   implementation(libs.kotlinpoet)
 
+  testImplementation(kotlin("test"))
   testImplementation(libs.test.junit)
   testImplementation(libs.test.truth)
-  testImplementation(kotlin("test"))
 
   testPluginClasspath(libs.plugin.agp)
+  testPluginClasspath(libs.plugin.compose)
   testPluginClasspath(libs.plugin.kotlin)
+  testPluginClasspath(libs.plugin.kotlinCompose)
 }
 
 fun androidHome(): String? {

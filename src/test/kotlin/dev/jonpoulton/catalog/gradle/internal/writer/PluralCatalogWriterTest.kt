@@ -8,6 +8,7 @@ import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.NameTransform
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry.XmlItem.WithArgs
 import dev.jonpoulton.catalog.gradle.internal.StringArg
+import dev.jonpoulton.catalog.gradle.internal.rClass
 import dev.jonpoulton.catalog.gradle.test.isEqualToKotlin
 import org.junit.Before
 import org.junit.Rule
@@ -36,6 +37,10 @@ class PluralCatalogWriterTest {
       prefix,
       parameterNaming,
       nameTransform,
+      resClass = rClass(packageName),
+      composableResourceAccessorPackage = "androidx.compose.ui.res",
+      pluralAccessorIsExperimental = true,
+      useReadOnlyComposable = true,
     ),
   )
 

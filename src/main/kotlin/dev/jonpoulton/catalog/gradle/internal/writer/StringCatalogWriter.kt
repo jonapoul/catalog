@@ -3,7 +3,6 @@
 package dev.jonpoulton.catalog.gradle.internal.writer
 
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
@@ -15,7 +14,7 @@ internal class StringCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
   override val resourceType: ResourceType = ResourceType.String,
 ) : CatalogWriter<ResourceEntry.XmlItem.WithArgs.String>() {
-  private val stringResourceMember = MemberName("androidx.compose.ui.res", "stringResource")
+  private val stringResourceMember by lazy { resourceAccessor("stringResource") }
 
   override fun TypeSpec.Builder.addResource(
     resource: ResourceEntry.XmlItem.WithArgs.String,
@@ -46,7 +45,7 @@ internal class StringCatalogWriter(
     val getter = FunSpec
       .getterBuilder()
       .addAnnotation(composableClass)
-      .addAnnotation(readOnlyComposableClass)
+      .addReadOnlyComposable(config)
       .addStatement(statementFormat, *statementArgs.toTypedArray())
       .build()
     val property = PropertySpec
@@ -70,7 +69,7 @@ internal class StringCatalogWriter(
       .builder(nameTransform(resource.name))
       .addKdoc(resource)
       .addAnnotation(composableClass)
-      .addAnnotation(readOnlyComposableClass)
+      .addReadOnlyComposable(config)
       .addInternalIfConfigured()
       .addFormattedParameters(formattedParameters)
       .returns(String::class)

@@ -1,10 +1,12 @@
 package dev.jonpoulton.catalog.gradle.internal.writer
 
+import com.squareup.kotlinpoet.Annotatable
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.Documentable
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
@@ -16,11 +18,10 @@ internal abstract class CatalogWriter<T : ResourceEntry> {
   protected abstract val config: GenerateResourcesTask.TaskConfig
   protected abstract val resourceType: ResourceType
 
-  protected val receiverClass by lazy { ClassName(config.packageName, resourceType.receiverType) }
-  protected val rClass by lazy { ClassName(config.packageName, "R") }
+  protected val rClass by lazy { config.resClass }
 
   protected val composableClass = ClassName("androidx.compose.runtime", "Composable")
-  protected val readOnlyComposableClass = ClassName("androidx.compose.runtime", "ReadOnlyComposable")
+  private val readOnlyComposableClass = ClassName("androidx.compose.runtime", "ReadOnlyComposable")
 
   fun write(resources: List<T>, codegenDestination: File) {
     val className = "${config.typePrefix}${resourceType.receiverType}"
@@ -58,6 +59,18 @@ internal abstract class CatalogWriter<T : ResourceEntry> {
     @Suppress("UNCHECKED_CAST")
     return this as T
   }
+
+  protected fun <T : Annotatable.Builder<T>> Annotatable.Builder<T>.addReadOnlyComposable(
+    config: GenerateResourcesTask.TaskConfig,
+  ): T = if (config.useReadOnlyComposable) {
+    addAnnotation(readOnlyComposableClass)
+  } else {
+    @Suppress("UNCHECKED_CAST")
+    this as T
+  }
+
+  protected fun resourceAccessor(name: String): MemberName =
+    MemberName(config.composableResourceAccessorPackage, name)
 
   protected fun <T> T.addInternalIfConfigured(): T {
     if (config.generateInternal) {

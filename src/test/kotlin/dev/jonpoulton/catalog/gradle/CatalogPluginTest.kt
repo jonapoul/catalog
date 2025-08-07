@@ -1,12 +1,14 @@
 package dev.jonpoulton.catalog.gradle
 
 import dev.jonpoulton.catalog.gradle.test.ANDROID_TASK_NAME
+import dev.jonpoulton.catalog.gradle.test.KMP_TASK_NAME
 import dev.jonpoulton.catalog.gradle.test.assertContains
 import dev.jonpoulton.catalog.gradle.test.assertSuccess
 import dev.jonpoulton.catalog.gradle.test.generatedFile
 import dev.jonpoulton.catalog.gradle.test.runTask
 import dev.jonpoulton.catalog.gradle.test.writeAndroidStringsFile
 import dev.jonpoulton.catalog.gradle.test.writeBuildFile
+import dev.jonpoulton.catalog.gradle.test.writeKmpStringsFile
 import dev.jonpoulton.catalog.gradle.test.writeSettingsFile
 import org.junit.Before
 import org.junit.Rule
@@ -57,7 +59,7 @@ class CatalogPluginTest {
       .build()
       .assertSuccess(":$ANDROID_TASK_NAME")
 
-    val outputFile = generatedFile("java/$ANDROID_TASK_NAME/a/b/c/Strings.kt")
+    val outputFile = generatedFile("kotlin/$ANDROID_TASK_NAME/a/b/c/Strings.kt")
     assertTrue(outputFile.exists())
     outputFile.assertContains(
       """
@@ -109,7 +111,7 @@ class CatalogPluginTest {
       .build()
       .assertSuccess(":$ANDROID_TASK_NAME")
 
-    val outputFile = generatedFile("java/$ANDROID_TASK_NAME/a/b/c/StringArrays.kt")
+    val outputFile = generatedFile("kotlin/$ANDROID_TASK_NAME/a/b/c/StringArrays.kt")
     assertTrue(outputFile.exists())
     outputFile.assertContains(
       """
@@ -121,6 +123,67 @@ class CatalogPluginTest {
             @Composable
             @ReadOnlyComposable
             get() = stringArrayResource(R.array.my_string_array)
+        }
+      """.trimIndent(),
+    )
+  }
+
+  @Test
+  fun `Generate strings in KMP project`() = with(root) {
+    writeBuildFile(
+      """
+        plugins {
+          kotlin("multiplatform")
+          kotlin("plugin.compose")
+          id("com.android.library")
+          id("dev.jonpoulton.catalog")
+          id("org.jetbrains.compose")
+        }
+
+        android {
+          namespace = "a.b.c"
+          compileSdk = 36
+        }
+
+        compose.resources {
+          packageOfResClass = "x.y.z"
+          nameOfResClass = "SomeOtherName"
+        }
+
+        kotlin {
+          jvm()
+          androidTarget()
+        }
+      """.trimIndent(),
+    )
+
+    writeKmpStringsFile(
+      code = """
+        <resources>
+          <!-- Here's a comment -->
+          <string name="app_name">Hello World</string>
+        </resources>
+      """.trimIndent(),
+    )
+
+    runTask(root, KMP_TASK_NAME)
+      .build()
+      .assertSuccess(":$KMP_TASK_NAME")
+
+    val outputFile = generatedFile("kotlin/generateCommonMainResources/a/b/c/Strings.kt")
+    assertTrue(outputFile.exists())
+    outputFile.assertContains("package a.b.c")
+    outputFile.assertContains("import x.y.z.SomeOtherName")
+    outputFile.assertContains("import org.jetbrains.compose.resources.stringResource")
+    outputFile.assertContains(
+      """
+        public object Strings {
+          /**
+           * Here's a comment
+           */
+          public val appName: String
+            @Composable
+            get() = stringResource(SomeOtherName.string.app_name)
         }
       """.trimIndent(),
     )

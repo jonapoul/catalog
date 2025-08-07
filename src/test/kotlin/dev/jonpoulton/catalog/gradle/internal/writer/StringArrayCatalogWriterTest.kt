@@ -5,6 +5,7 @@ import dev.jonpoulton.catalog.gradle.CatalogParameterNaming
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask.TaskConfig
 import dev.jonpoulton.catalog.gradle.NameTransform
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
+import dev.jonpoulton.catalog.gradle.internal.rClass
 import dev.jonpoulton.catalog.gradle.test.isEqualToKotlin
 import org.junit.Before
 import org.junit.Rule
@@ -31,7 +32,19 @@ class StringArrayCatalogWriterTest {
     prefix: String = "",
     parameterNaming: CatalogParameterNaming = CatalogParameterNaming.Arg,
     nameTransform: NameTransform = NameTransform.CamelCase,
-  ) = StringArrayCatalogWriter(config = TaskConfig(packageName, internal, prefix, parameterNaming, nameTransform))
+  ) = StringArrayCatalogWriter(
+    config = TaskConfig(
+      packageName,
+      internal,
+      prefix,
+      parameterNaming,
+      nameTransform,
+      resClass = rClass(packageName),
+      composableResourceAccessorPackage = "androidx.compose.ui.res",
+      pluralAccessorIsExperimental = true,
+      useReadOnlyComposable = true,
+    ),
+  )
 
   @Before
   fun setUp() {

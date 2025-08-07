@@ -5,7 +5,6 @@ package dev.jonpoulton.catalog.gradle.internal.writer
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
@@ -16,7 +15,9 @@ internal class PluralCatalogWriter(
   override val resourceType: ResourceType = ResourceType.Plural,
 ) : CatalogWriter<ResourceEntry.XmlItem.WithArgs.Plural>() {
   private val experimentalComposeUiApiClass = ClassName("androidx.compose.ui", "ExperimentalComposeUiApi")
-  private val pluralResourceMember = MemberName("androidx.compose.ui.res", "pluralStringResource")
+
+  private val pluralResourceMember by lazy { resourceAccessor("pluralStringResource") }
+
   private val optInClass = ClassName("kotlin", "OptIn")
 
   override fun TypeSpec.Builder.addResource(
@@ -42,9 +43,9 @@ internal class PluralCatalogWriter(
     val function = FunSpec
       .builder(config.nameTransform(resource.name))
       .addKdoc(resource)
-      .addAnnotation(annotation)
+      .apply { if (config.pluralAccessorIsExperimental) addAnnotation(annotation) }
       .addAnnotation(composableClass)
-      .addAnnotation(readOnlyComposableClass)
+      .addReadOnlyComposable(config)
       .addInternalIfConfigured()
       .addParameter(name = quantityParamName, type = Int::class)
       .addFormattedParameters(formattedParameters)

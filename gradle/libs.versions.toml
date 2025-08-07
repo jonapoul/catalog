@@ -2,6 +2,7 @@
 # Plugins
 agp = "8.7.2"
 blueprint = "0.11.0"
+compose = "1.8.2"
 detekt = "1.23.7"
 kotlin = "2.0.21"
 ktlint-cli = "1.4.1"
@@ -22,7 +23,9 @@ test-truth = "1.4.2"
 plugin-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 plugin-blueprint-core = { module = "dev.jonpoulton.blueprint:core", version.ref = "blueprint" }
 plugin-blueprint-recipes = { module = "dev.jonpoulton.blueprint:recipes", version.ref = "blueprint" }
+plugin-compose = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version.ref = "compose" }
 plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-kotlinCompose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 
 # Libraries
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }

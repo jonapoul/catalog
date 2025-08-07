@@ -22,7 +22,7 @@ internal class DrawableCatalogWriter(
   private val experimentalAnimationGraphicsApiClass =
     ClassName("androidx.compose.animation.graphics", "ExperimentalAnimationGraphicsApi")
 
-  private val painterResourceMember = MemberName("androidx.compose.ui.res", "painterResource")
+  private val painterResourceMember by lazy { resourceAccessor("painterResource") }
 
   private val animatedVectorResourceMember =
     MemberName("androidx.compose.animation.graphics.res", "animatedVectorResource")
