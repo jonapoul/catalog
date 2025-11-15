@@ -3,6 +3,7 @@
 package dev.jonpoulton.catalog.gradle
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
 import dev.jonpoulton.catalog.gradle.internal.taskName
@@ -160,11 +161,22 @@ public class CatalogPlugin : Plugin<Project> {
   private val isGradleSync: Boolean
     get() = System.getProperty("idea.sync.active") == "true"
 
-  @Suppress("TooGenericExceptionCaught", "SwallowedException")
-  private fun Project.androidPackageNameOrNull(): Provider<String> = try {
-    val ext = extensions.getByType(CommonExtension::class.java)
-    provider { ext.namespace }
-  } catch (e: Exception) {
-    provider { error("No android plugin was applied to $path - can't find package name!") }
+  private fun Project.androidPackageNameOrNull(): Provider<String> = when {
+    pluginManager.hasPlugin("com.android.base") -> {
+      val android = extensions.getByType(CommonExtension::class.java)
+      provider { android.namespace }
+    }
+
+    pluginManager.hasPlugin("com.android.kotlin.multiplatform.library") -> {
+      val android = extensions
+        .getByType(KotlinMultiplatformExtension::class.java)
+        .extensions
+        .getByType(KotlinMultiplatformAndroidLibraryTarget::class.java)
+      provider { android.namespace }
+    }
+
+    else -> {
+      provider { error("No android plugin was applied to $path - can't find package name!") }
+    }
   }
 }

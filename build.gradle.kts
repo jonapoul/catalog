@@ -71,7 +71,8 @@ dependencies {
   fun testPluginClasspath(plugin: Provider<PluginDependency>) =
     with(plugin.get()) { testPluginClasspath("$pluginId:$pluginId.gradle.plugin:$version") }
 
-  compileOnly(libs.plugins.agp)
+  compileOnly(libs.plugins.agp.kmp)
+  compileOnly(libs.plugins.agp.lib)
   compileOnly(libs.plugins.jetbrainsCompose)
   compileOnly(libs.plugins.kotlinAndroid)
   compileOnly(libs.plugins.kotlinJvm)
@@ -83,7 +84,8 @@ dependencies {
   testImplementation(libs.test.junit)
   testImplementation(libs.test.truth)
 
-  testPluginClasspath(libs.plugins.agp)
+  testPluginClasspath(libs.plugins.agp.kmp)
+  testPluginClasspath(libs.plugins.agp.lib)
   testPluginClasspath(libs.plugins.jetbrainsCompose)
   testPluginClasspath(libs.plugins.kotlinAndroid)
   testPluginClasspath(libs.plugins.kotlinJvm)
