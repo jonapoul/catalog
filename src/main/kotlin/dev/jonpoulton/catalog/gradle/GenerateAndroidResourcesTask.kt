@@ -18,22 +18,21 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.kotlin.dsl.register
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 @CacheableTask
-abstract class GenerateAndroidResourcesTask : GenerateResourcesTask() {
-  @get:[Input Optional] abstract val packageName: Property<String>
-  @get:[Input Optional] abstract val typePrefix: Property<String>
-  @get:Input abstract val generateInternal: Property<Boolean>
-  @get:Input abstract val parameterNaming: Property<CatalogParameterNaming>
-  @get:Internal abstract val nameTransform: Property<NameTransform>
-  @get:Internal abstract val sourceSetDirs: SetProperty<File>
+public abstract class GenerateAndroidResourcesTask : GenerateResourcesTask() {
+  @get:[Input Optional] public abstract val packageName: Property<String>
+  @get:[Input Optional] public abstract val typePrefix: Property<String>
+  @get:Input public abstract val generateInternal: Property<Boolean>
+  @get:Input public abstract val parameterNaming: Property<CatalogParameterNaming>
+  @get:Internal public abstract val nameTransform: Property<NameTransform>
+  @get:Internal public abstract val sourceSetDirs: SetProperty<File>
   @get:OutputDirectory abstract override val outputDirectory: DirectoryProperty
 
   @TaskAction
-  fun action() {
+  public fun action() {
     val outputDirectory = outputDirectory.asFile.get()
     if (outputDirectory.exists()) outputDirectory.deleteRecursively()
 
@@ -57,8 +56,8 @@ abstract class GenerateAndroidResourcesTask : GenerateResourcesTask() {
     ).start(sourceSetDirs.get(), outputDirectory)
   }
 
-  companion object {
-    fun register(
+  internal companion object {
+    internal fun register(
       target: Project,
       taskName: String,
       catalogExtension: CatalogExtension,
@@ -66,22 +65,20 @@ abstract class GenerateAndroidResourcesTask : GenerateResourcesTask() {
       sourceSetDirs: Set<File>,
       sourceSetName: String,
     ): TaskProvider<GenerateAndroidResourcesTask> = with(target) {
-      tasks.register<GenerateAndroidResourcesTask>(taskName) {
+      tasks.register(taskName, GenerateAndroidResourcesTask::class.java) { task ->
         val packageName = catalogExtension.packageName.orNull
           ?: commonExtension.namespace
           ?: commonExtension.sourceSets.findByName(sourceSetName)?.readManifestPackageName()
           ?: error("Missing package name in manifest file for source set $sourceSetName")
 
-        this.packageName.set(packageName)
-        this.generateInternal.set(catalogExtension.generateInternal)
-        this.typePrefix.set(catalogExtension.typePrefix.orNull.orEmpty())
-        this.nameTransform.set(catalogExtension.nameTransform)
-        this.parameterNaming.set(catalogExtension.parameterNaming)
-        this.sourceSetDirs.set(sourceSetDirs)
-        this.outputDirectory.set(
-          layout.buildDirectory.dir("generated/kotlin/generate${sourceSetName.capitalize()}Resources"),
-        )
-        for (dir in sourceSetDirs) source(dir)
+        task.packageName.set(packageName)
+        task.generateInternal.set(catalogExtension.generateInternal)
+        task.typePrefix.set(catalogExtension.typePrefix.orNull.orEmpty())
+        task.nameTransform.set(catalogExtension.nameTransform)
+        task.parameterNaming.set(catalogExtension.parameterNaming)
+        task.sourceSetDirs.set(sourceSetDirs)
+        task.outputDirectory.set(layout.buildDirectory.dir("generated/kotlin/catalog${sourceSetName.capitalize()}"))
+        for (dir in sourceSetDirs) task.source(dir)
       }
     }
   }

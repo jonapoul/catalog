@@ -82,6 +82,7 @@ internal class Codegen(
     )
 
     lowercaseExtension == "xml" -> drawableResourceParser.parseFile(this)
+
     else -> null
   }
 

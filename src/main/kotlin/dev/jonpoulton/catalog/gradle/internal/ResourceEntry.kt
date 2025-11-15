@@ -78,7 +78,7 @@ internal sealed interface ResourceEntry {
   }
 }
 
-data class StringArg(
+internal data class StringArg(
   val position: Int,
   val type: Char,
 )

@@ -14,8 +14,8 @@ import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-internal const val ANDROID_TASK_NAME = "generateMainResourceCatalog"
-internal const val KMP_TASK_NAME = "generateCommonMainResourceCatalog"
+internal const val ANDROID_TASK_NAME = "catalogMain"
+internal const val KMP_TASK_NAME = "catalogCommonMain"
 
 internal fun StringSubject.isEqualToKotlin(
   @Language("kotlin") code: String,

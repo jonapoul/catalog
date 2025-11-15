@@ -21,6 +21,7 @@ internal fun getFormattedParameters(
 
   val name = when (parameterNaming) {
     CatalogParameterNaming.Arg -> "arg$position"
+
     CatalogParameterNaming.ByType -> when (type) {
       Int::class -> "int"
       UInt::class -> "uint"

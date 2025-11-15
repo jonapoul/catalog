@@ -1,6 +1,6 @@
 ---
 complexity:
   LongMethod:
-    threshold: 100
+    allowedLines: 100
   LongParameterList:
-    functionThreshold: 10
+    allowedFunctionParameters: 10

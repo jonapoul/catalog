@@ -59,7 +59,7 @@ class CatalogPluginTest {
       .build()
       .assertSuccess(":$ANDROID_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/$ANDROID_TASK_NAME/a/b/c/Strings.kt")
+    val outputFile = generatedFile("kotlin/catalogMain/a/b/c/Strings.kt")
     assertTrue(outputFile.exists())
     outputFile.assertContains(
       """
@@ -111,7 +111,7 @@ class CatalogPluginTest {
       .build()
       .assertSuccess(":$ANDROID_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/$ANDROID_TASK_NAME/a/b/c/StringArrays.kt")
+    val outputFile = generatedFile("kotlin/catalogMain/a/b/c/StringArrays.kt")
     assertTrue(outputFile.exists())
     outputFile.assertContains(
       """
@@ -170,7 +170,7 @@ class CatalogPluginTest {
       .build()
       .assertSuccess(":$KMP_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/generateCommonMainResources/a/b/c/Strings.kt")
+    val outputFile = generatedFile("kotlin/catalogCommonMain/a/b/c/Strings.kt")
     assertTrue(outputFile.exists())
     outputFile.assertContains("package a.b.c")
     outputFile.assertContains("import x.y.z.SomeOtherName")
