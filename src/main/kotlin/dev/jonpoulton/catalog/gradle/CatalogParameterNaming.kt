@@ -1,6 +1,6 @@
 package dev.jonpoulton.catalog.gradle
 
-enum class CatalogParameterNaming {
+public enum class CatalogParameterNaming {
   // Parameters named like "arg1", "arg2", "arg3"
   Arg,
 

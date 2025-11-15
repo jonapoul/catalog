@@ -1,0 +1,69 @@
+public class dev/jonpoulton/catalog/gradle/CatalogExtension {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getGenerateAtSync ()Lorg/gradle/api/provider/Property;
+	public final fun getGenerateInternal ()Lorg/gradle/api/provider/Property;
+	public final fun getNameTransform ()Lorg/gradle/api/provider/Property;
+	public final fun getPackageName ()Lorg/gradle/api/provider/Property;
+	public final fun getParameterNaming ()Lorg/gradle/api/provider/Property;
+	public final fun getTypePrefix ()Lorg/gradle/api/provider/Property;
+}
+
+public final class dev/jonpoulton/catalog/gradle/CatalogParameterNaming : java/lang/Enum {
+	public static final field Arg Ldev/jonpoulton/catalog/gradle/CatalogParameterNaming;
+	public static final field ByType Ldev/jonpoulton/catalog/gradle/CatalogParameterNaming;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Ldev/jonpoulton/catalog/gradle/CatalogParameterNaming;
+	public static fun values ()[Ldev/jonpoulton/catalog/gradle/CatalogParameterNaming;
+}
+
+public final class dev/jonpoulton/catalog/gradle/CatalogPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public abstract class dev/jonpoulton/catalog/gradle/GenerateAndroidResourcesTask : dev/jonpoulton/catalog/gradle/GenerateResourcesTask {
+	public fun <init> ()V
+	public final fun action ()V
+	public abstract fun getGenerateInternal ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNameTransform ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getPackageName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getParameterNaming ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceSetDirs ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getTypePrefix ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class dev/jonpoulton/catalog/gradle/GenerateKmpResourcesTask : dev/jonpoulton/catalog/gradle/GenerateResourcesTask {
+	public fun <init> ()V
+	public final fun action ()V
+	public abstract fun getGenerateInternal ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNameTransform ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getPackageName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getParameterNaming ()Lorg/gradle/api/provider/Property;
+	public abstract fun getResClassName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getResClassPackageName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceSetDirs ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getTypePrefix ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class dev/jonpoulton/catalog/gradle/GenerateResourcesTask : org/gradle/api/tasks/SourceTask {
+	public fun <init> ()V
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+}
+
+public abstract interface class dev/jonpoulton/catalog/gradle/NameTransform {
+	public static final field Companion Ldev/jonpoulton/catalog/gradle/NameTransform$Companion;
+	public abstract fun invoke (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class dev/jonpoulton/catalog/gradle/NameTransform$Companion {
+	public final fun chained ()Ldev/jonpoulton/catalog/gradle/NameTransform;
+	public final fun chained ([Ldev/jonpoulton/catalog/gradle/NameTransform;)Ldev/jonpoulton/catalog/gradle/NameTransform;
+	public final fun getCamelCase ()Ldev/jonpoulton/catalog/gradle/NameTransform;
+	public final fun getNoChange ()Ldev/jonpoulton/catalog/gradle/NameTransform;
+	public final fun removePrefix (Ljava/lang/String;)Ldev/jonpoulton/catalog/gradle/NameTransform;
+	public final fun removeSuffix (Ljava/lang/String;)Ldev/jonpoulton/catalog/gradle/NameTransform;
+}
+

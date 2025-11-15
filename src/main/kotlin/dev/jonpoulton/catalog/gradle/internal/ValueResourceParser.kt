@@ -91,13 +91,20 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
       allArgs.forEach { quantityArgs ->
         val arg = quantityArgs[argPosition]
         when {
-          arg == null -> return@forEach
-          sharedArg == null -> sharedArg = arg
-          arg.type != requireNotNull(sharedArg).type ->
+          arg == null -> {
+            return@forEach
+          }
+
+          sharedArg == null -> {
+            sharedArg = arg
+          }
+
+          arg.type != sharedArg.type -> {
             error(
               "Inconsistent argument types in plural resource $pluralName. Make sure args with the" +
                 " same index across all quantity entries have the same type.",
             )
+          }
         }
       }
       sharedArg?.let { sharedArgs += it }
@@ -123,10 +130,12 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
       }
       val start = matcher.start()
       val end = matcher.end()
-      if (start > 0 && this[start - 1] == '\\' || start < end && this[start + 1] == '%') {
-        // ignores \% and %%
-        continue
-      }
+
+      // ignore \% and %%
+      val isEscapedWithBackslash = start > 0 && this[start - 1] == '\\'
+      val isDoublePercent = start < end && this[start + 1] == '%'
+      if (isEscapedWithBackslash || isDoublePercent) continue
+
       val type = matcher
         .group(6)
         .first()
@@ -139,7 +148,7 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
           "Unexpected position placeholder: $positionGroup"
         }
         hasPositionalArgs = true
-        val position = positionGroup.substring(0, positionGroup.lastIndex).toInt()
+        val position = positionGroup.take(positionGroup.lastIndex).toInt()
         position to StringArg(position, type)
       } else {
         val position = ++implicitPosition

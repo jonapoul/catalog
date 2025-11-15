@@ -5,10 +5,15 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.SourceTask
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 @CacheableTask
-abstract class GenerateResourcesTask : SourceTask() {
-  @get:OutputDirectory abstract val outputDirectory: DirectoryProperty
+public abstract class GenerateResourcesTask : SourceTask() {
+  @get:OutputDirectory public abstract val outputDirectory: DirectoryProperty
+
+  init {
+    group = LifecycleBasePlugin.BUILD_GROUP
+  }
 
   internal data class TaskConfig(
     val packageName: String,

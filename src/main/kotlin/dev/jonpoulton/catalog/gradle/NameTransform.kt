@@ -1,17 +1,15 @@
 package dev.jonpoulton.catalog.gradle
 
 import dev.jonpoulton.catalog.gradle.internal.toCamelCase
+import kotlin.DeprecationLevel.ERROR
 
-fun interface NameTransform {
-  operator fun invoke(resourceName: String): String
+public fun interface NameTransform {
+  public operator fun invoke(resourceName: String): String
 
-  companion object {
+  public companion object {
     @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated(
-      message = "Zero-arg not supported, add at least one NameTransform",
-      level = DeprecationLevel.ERROR,
-    )
-    fun chained(): NameTransform = error("Not supported")
+    @Deprecated("Zero-arg not supported, add at least one NameTransform", level = ERROR)
+    public fun chained(): NameTransform = error("Not supported")
 
     /**
      * Can be used to chain together any combination of other [NameTransform]s, in order of declaration. E.g.
@@ -24,7 +22,7 @@ fun interface NameTransform {
      * val output = transform("my_test_string") // -> "testStr"
      * ```
      */
-    fun chained(vararg transforms: NameTransform) = NameTransform { name ->
+    public fun chained(vararg transforms: NameTransform): NameTransform = NameTransform { name ->
       var mutableName = name
       transforms.forEach { transform -> mutableName = transform(mutableName) }
       mutableName
@@ -36,7 +34,7 @@ fun interface NameTransform {
      * val my_test_string: String
      * ```
      */
-    val NoChange = NameTransform { name -> name }
+    public val NoChange: NameTransform = NameTransform { name -> name }
 
     /**
      * Resource name of `"my_test_string"` transformed to property like:
@@ -44,7 +42,7 @@ fun interface NameTransform {
      * val myTestString: String
      * ```
      */
-    val CamelCase = NameTransform { name -> name.toCamelCase() }
+    public val CamelCase: NameTransform = NameTransform { name -> name.toCamelCase() }
 
     /**
      * Resource name of `"my_test_string"` with prefix of `"my_"` transformed to property like:
@@ -52,7 +50,7 @@ fun interface NameTransform {
      * val test_string: String
      * ```
      */
-    fun removePrefix(prefix: String) = NameTransform { name -> name.removePrefix(prefix) }
+    public fun removePrefix(prefix: String): NameTransform = NameTransform { name -> name.removePrefix(prefix) }
 
     /**
      * Resource name of `"my_test_string"` with suffix of `"_string"` transformed to property like:
@@ -60,6 +58,6 @@ fun interface NameTransform {
      * val my_test: String
      * ```
      */
-    fun removeSuffix(suffix: String) = NameTransform { name -> name.removeSuffix(suffix) }
+    public fun removeSuffix(suffix: String): NameTransform = NameTransform { name -> name.removeSuffix(suffix) }
   }
 }

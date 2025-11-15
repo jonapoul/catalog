@@ -1,8 +1,9 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "unused")
 
 package dev.jonpoulton.catalog.gradle
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
 import dev.jonpoulton.catalog.gradle.internal.taskName
@@ -10,20 +11,16 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.withType
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import java.io.File
 
-@Suppress("unused")
-class CatalogPlugin : Plugin<Project> {
+public class CatalogPlugin : Plugin<Project> {
   override fun apply(project: Project): Unit = with(project) {
-    val catalogExtension = extensions.create<CatalogExtension>("catalog")
+    val catalogExtension = extensions.create("catalog", CatalogExtension::class.java)
 
     with(pluginManager) {
       withPlugin("org.jetbrains.kotlin.android") {
@@ -41,16 +38,15 @@ class CatalogPlugin : Plugin<Project> {
       }
     }
 
-    val catalogTasks = tasks.withType<GenerateResourcesTask>()
+    val catalogTasks = tasks.withType(GenerateResourcesTask::class.java)
 
     // Run before any kotlin compilation
-    tasks.withType(AbstractKotlinCompile::class).configureEach {
-      dependsOn(catalogTasks)
-    }
+    tasks.withType(AbstractKotlinCompile::class.java).configureEach { it.dependsOn(catalogTasks) }
 
     // Add a wrapper task
-    val wrapper = tasks.register(taskName(qualifier = "")) {
-      dependsOn(catalogTasks)
+    val wrapper = tasks.register("catalog") { task ->
+      task.group = LifecycleBasePlugin.BUILD_GROUP
+      task.dependsOn(catalogTasks)
     }
 
     afterEvaluate {
@@ -62,30 +58,36 @@ class CatalogPlugin : Plugin<Project> {
 
   private fun Project.applyKmp(catalogExtension: CatalogExtension) {
     val resourcesExtension = extensions
-      .getByType<ComposeExtension>()
+      .getByType(ComposeExtension::class.java)
       .extensions
-      .getByType<ResourcesExtension>()
+      .getByType(ResourcesExtension::class.java)
 
-    extensions.getByType<KotlinMultiplatformExtension>().sourceSets.getByName("commonMain") {
-      val taskName = taskName(qualifier = name)
+    extensions
+      .getByType(KotlinMultiplatformExtension::class.java)
+      .sourceSets
+      .getByName("commonMain") { kotlinSourceSet ->
+        val name = kotlinSourceSet.name
+        val taskName = taskName(qualifier = name)
 
-      val task = GenerateKmpResourcesTask.register(
-        target = this@applyKmp,
-        taskName = taskName,
-        catalogExtension = catalogExtension,
-        resourcesExtension = resourcesExtension,
-        sourceSetDirs = setOf(file("src/$name/composeResources")),
-        sourceSetName = name,
-        androidPackageName = androidPackageNameOrNull(),
-      )
+        val task = GenerateKmpResourcesTask.register(
+          target = this,
+          taskName = taskName,
+          catalogExtension = catalogExtension,
+          resourcesExtension = resourcesExtension,
+          sourceSetDirs = setOf(file("src/$name/composeResources")),
+          sourceSetName = name,
+          androidPackageName = androidPackageNameOrNull(),
+        )
 
-      kotlin.srcDir(task.map { t -> t.outputDirectory })
-    }
+        kotlinSourceSet.kotlin.srcDir(task.flatMap { it.outputDirectory })
+      }
   }
 
   private fun Project.applyAndroid(catalogExtension: CatalogExtension) {
-    val androidComponents = extensions.getByType(AndroidComponentsExtension::class)
-    androidComponents.finalizeDsl { commonExtension ->
+    val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
+    androidComponents.finalizeDsl { ext ->
+      @Suppress("UNCHECKED_CAST")
+      val commonExtension = ext as CommonExtension<*, *, *, *, *, *>
       val mainTaskProvider = getTaskProviderForSourceSet(
         catalogExtension = catalogExtension,
         commonExtension = commonExtension,
@@ -136,7 +138,7 @@ class CatalogPlugin : Plugin<Project> {
     sourceSetName: String,
   ): TaskProvider<GenerateAndroidResourcesTask> {
     val taskName = taskName(sourceSetName)
-    return runCatching { tasks.named<GenerateAndroidResourcesTask>(taskName) }.getOrNull()
+    return runCatching { tasks.named(taskName, GenerateAndroidResourcesTask::class.java) }.getOrNull()
       ?: GenerateAndroidResourcesTask.register(
         target = this,
         taskName = taskName,
@@ -159,11 +161,22 @@ class CatalogPlugin : Plugin<Project> {
   private val isGradleSync: Boolean
     get() = System.getProperty("idea.sync.active") == "true"
 
-  @Suppress("TooGenericExceptionCaught", "SwallowedException")
-  private fun Project.androidPackageNameOrNull(): Provider<String> = try {
-    val ext = extensions.getByType(CommonExtension::class)
-    provider { ext.namespace }
-  } catch (e: Exception) {
-    provider { error("No android plugin was applied to $path - can't find package name!") }
+  private fun Project.androidPackageNameOrNull(): Provider<String> = when {
+    pluginManager.hasPlugin("com.android.base") -> {
+      val android = extensions.getByType(CommonExtension::class.java)
+      provider { android.namespace }
+    }
+
+    pluginManager.hasPlugin("com.android.kotlin.multiplatform.library") -> {
+      val android = extensions
+        .getByType(KotlinMultiplatformExtension::class.java)
+        .extensions
+        .getByType(KotlinMultiplatformAndroidLibraryTarget::class.java)
+      provider { android.namespace }
+    }
+
+    else -> {
+      provider { error("No android plugin was applied to $path - can't find package name!") }
+    }
   }
 }

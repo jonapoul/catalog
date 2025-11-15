@@ -1,74 +1,82 @@
-import blueprint.recipes.DetektAll
-import blueprint.recipes.detektBlueprint
-import blueprint.recipes.kotlinJvmBlueprint
-import blueprint.recipes.ktlintBlueprint
-import blueprint.recipes.spotlessBlueprint
+import dev.detekt.gradle.Detekt
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML
 import java.util.Properties
 
-buildscript {
-  repositories {
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath(libs.plugin.blueprint.core)
-    classpath(libs.plugin.blueprint.recipes)
-  }
-}
-
 plugins {
-  alias(libs.plugins.kotlin)
+  alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.publish)
   alias(libs.plugins.detekt)
   alias(libs.plugins.ktlint)
-  alias(libs.plugins.spotless)
-  `kotlin-dsl`
   `java-gradle-plugin`
 }
 
-tasks.validatePlugins {
-  // TODO: https://github.com/gradle/gradle/issues/22600
-  enableStricterValidation = true
+// TODO: https://github.com/gradle/gradle/issues/22600
+tasks.validatePlugins { enableStricterValidation = true }
+
+val javaVersionStr = providers.gradleProperty("catalog.javaVersion").get()
+val javaVersion = JavaVersion.toVersion(javaVersionStr)
+
+java {
+  sourceCompatibility = javaVersion
+  targetCompatibility = javaVersion
 }
 
-kotlinJvmBlueprint(libs.versions.kotlin)
-ktlintBlueprint(libs.versions.ktlint.cli)
-spotlessBlueprint()
-detektBlueprint(
-  detektAllConfig = DetektAll.Apply(ignoreRelease = true),
-  configFile = projectDir.resolve("detekt.yml"),
-)
+kotlin {
+  jvmToolchain(javaVersionStr.toInt())
+  explicitApi()
 
-gradlePlugin {
-  plugins {
-    create("catalog-deprecated") {
-      id = "dev.jonpoulton.catalog"
-      implementationClass = "dev.jonpoulton.catalog.gradle.CatalogPlugin"
-    }
-    create("catalog-android") {
-      id = "dev.jonpoulton.catalog.android"
-      implementationClass = "dev.jonpoulton.catalog.gradle.CatalogAndroidPlugin"
-    }
+  compilerOptions {
+    allWarningsAsErrors = true
+    jvmTarget = JvmTarget.fromTarget(javaVersionStr)
   }
+
+  @OptIn(ExperimentalAbiValidation::class)
+  abiValidation { enabled = true }
+}
+
+ktlint {
+  version = libs.versions.ktlint
+  reporters { reporter(HTML) }
+}
+
+detekt {
+  config.from(file("detekt.yml"))
+  buildUponDefaultConfig = true
+}
+
+val detektTasks = tasks.withType(Detekt::class)
+detektTasks.configureEach { reports.html.required = true }
+val detektCheck by tasks.registering { dependsOn(detektTasks) }
+tasks.check { dependsOn(detektCheck) }
+
+gradlePlugin.plugins.create("catalog") {
+  id = "dev.jonpoulton.catalog"
+  implementationClass = "dev.jonpoulton.catalog.gradle.CatalogPlugin"
 }
 
 // Adapted from https://github.com/GradleUp/shadow/blob/1d7b0863fed3126bf376f11d563e9176de176cd3/build.gradle.kts#L63-L65
 // Allows gradle test cases to use the same classpath as the parent build - meaning we don't need to specify versions
 // when loading plugins into test projects.
-val testPluginClasspath by configurations.registering {
-  isCanBeResolved = true
-}
+val testPluginClasspath by configurations.registering { isCanBeResolved = true }
 
-tasks.pluginUnderTestMetadata {
-  // Plugins used in tests could be resolved in classpath.
-  pluginClasspath.from(testPluginClasspath)
-}
+// Plugins used in tests could be resolved in classpath.
+tasks.pluginUnderTestMetadata { pluginClasspath.from(testPluginClasspath) }
 
 dependencies {
-  compileOnly(libs.plugin.agp)
-  compileOnly(libs.plugin.compose)
-  compileOnly(libs.plugin.kotlin)
-  compileOnly(libs.plugin.kotlinCompose)
+  fun compileOnly(plugin: Provider<PluginDependency>) =
+    with(plugin.get()) { compileOnly("$pluginId:$pluginId.gradle.plugin:$version") }
+
+  fun testPluginClasspath(plugin: Provider<PluginDependency>) =
+    with(plugin.get()) { testPluginClasspath("$pluginId:$pluginId.gradle.plugin:$version") }
+
+  compileOnly(libs.plugins.agp.kmp)
+  compileOnly(libs.plugins.agp.lib)
+  compileOnly(libs.plugins.jetbrainsCompose)
+  compileOnly(libs.plugins.kotlinAndroid)
+  compileOnly(libs.plugins.kotlinJvm)
+  compileOnly(libs.plugins.kotlinMultiplatform)
 
   implementation(libs.kotlinpoet)
 
@@ -76,10 +84,12 @@ dependencies {
   testImplementation(libs.test.junit)
   testImplementation(libs.test.truth)
 
-  testPluginClasspath(libs.plugin.agp)
-  testPluginClasspath(libs.plugin.compose)
-  testPluginClasspath(libs.plugin.kotlin)
-  testPluginClasspath(libs.plugin.kotlinCompose)
+  testPluginClasspath(libs.plugins.agp.kmp)
+  testPluginClasspath(libs.plugins.agp.lib)
+  testPluginClasspath(libs.plugins.jetbrainsCompose)
+  testPluginClasspath(libs.plugins.kotlinAndroid)
+  testPluginClasspath(libs.plugins.kotlinJvm)
+  testPluginClasspath(libs.plugins.kotlinCompose)
 }
 
 fun androidHome(): String? {

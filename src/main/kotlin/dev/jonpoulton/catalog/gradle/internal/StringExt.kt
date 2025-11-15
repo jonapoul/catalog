@@ -7,13 +7,18 @@ internal fun String.toCamelCase(): String {
   while (i < length) {
     val c = this[i]
     when {
-      c == '_' || c == '-' -> capitalize = true
+      c == '_' || c == '-' -> {
+        capitalize = true
+      }
+
       capitalize -> {
         camelCase.append(c.uppercase())
         capitalize = false
       }
 
-      else -> camelCase.append(c)
+      else -> {
+        camelCase.append(c)
+      }
     }
     i++
   }

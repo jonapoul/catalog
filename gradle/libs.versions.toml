@@ -1,45 +1,21 @@
 [versions]
-# Plugins
-agp = "8.7.2"
-blueprint = "0.11.0"
-compose = "1.8.2"
-detekt = "1.23.7"
-kotlin = "2.0.21"
-ktlint-cli = "1.4.1"
-ktlint-gradle = "12.1.1"
-publish = "0.30.0"
-spotless = "6.25.0"
-
-# Libraries
-androidx-compose-bom = "2024.11.00"
-kotlinpoet = "2.0.0"
-
-# Testing
-test-junit = "4.13.2"
-test-truth = "1.4.2"
+agp = "8.13.1"
+kotlin = "2.2.20"
+ktlint = "1.8.0"
 
 [libraries]
-# Plugins
-plugin-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
-plugin-blueprint-core = { module = "dev.jonpoulton.blueprint:core", version.ref = "blueprint" }
-plugin-blueprint-recipes = { module = "dev.jonpoulton.blueprint:recipes", version.ref = "blueprint" }
-plugin-compose = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version.ref = "compose" }
-plugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-plugin-kotlinCompose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
-
-# Libraries
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
-androidx-compose-material = { module = "androidx.compose.material:material" }
-androidx-compose-ui-core = { module = "androidx.compose.ui:ui" }
-kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
-
-# Testing
-test-junit = { module = "junit:junit", version.ref = "test-junit" }
-test-truth = { module = "com.google.truth:truth", version.ref = "test-truth" }
+kotlinpoet = { module = "com.squareup:kotlinpoet", version = "2.2.0" }
+test-junit = { module = "junit:junit", version = "4.13.2" }
+test-truth = { module = "com.google.truth:truth", version = "1.4.5" }
 
 [plugins]
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
-publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
-spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+agp-lib = { id = "com.android.library", version.ref = "agp" }
+detekt = { id = "dev.detekt", version = "2.0.0-alpha.1" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version = "1.9.3" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "14.0.1" }
+publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }

@@ -59,7 +59,7 @@ class CatalogPluginTest {
       .build()
       .assertSuccess(":$ANDROID_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/$ANDROID_TASK_NAME/a/b/c/Strings.kt")
+    val outputFile = generatedFile("kotlin/catalogMain/a/b/c/Strings.kt")
     assertTrue(outputFile.exists())
     outputFile.assertContains(
       """
@@ -111,7 +111,7 @@ class CatalogPluginTest {
       .build()
       .assertSuccess(":$ANDROID_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/$ANDROID_TASK_NAME/a/b/c/StringArrays.kt")
+    val outputFile = generatedFile("kotlin/catalogMain/a/b/c/StringArrays.kt")
     assertTrue(outputFile.exists())
     outputFile.assertContains(
       """
@@ -170,7 +170,67 @@ class CatalogPluginTest {
       .build()
       .assertSuccess(":$KMP_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/generateCommonMainResources/a/b/c/Strings.kt")
+    val outputFile = generatedFile("kotlin/catalogCommonMain/a/b/c/Strings.kt")
+    assertTrue(outputFile.exists())
+    outputFile.assertContains("package a.b.c")
+    outputFile.assertContains("import x.y.z.SomeOtherName")
+    outputFile.assertContains("import org.jetbrains.compose.resources.stringResource")
+    outputFile.assertContains(
+      """
+        public object Strings {
+          /**
+           * Here's a comment
+           */
+          public val appName: String
+            @Composable
+            get() = stringResource(SomeOtherName.string.app_name)
+        }
+      """.trimIndent(),
+    )
+  }
+
+  @Test
+  fun `Generate strings in KMP project using new KMP AGP`() = with(root) {
+    writeBuildFile(
+      """
+        plugins {
+          kotlin("multiplatform")
+          kotlin("plugin.compose")
+          id("com.android.kotlin.multiplatform.library")
+          id("dev.jonpoulton.catalog")
+          id("org.jetbrains.compose")
+        }
+
+        compose.resources {
+          packageOfResClass = "x.y.z"
+          nameOfResClass = "SomeOtherName"
+        }
+
+        kotlin {
+          jvm()
+
+          android {
+            namespace = "a.b.c"
+            compileSdk = 36
+          }
+        }
+      """.trimIndent(),
+    )
+
+    writeKmpStringsFile(
+      code = """
+        <resources>
+          <!-- Here's a comment -->
+          <string name="app_name">Hello World</string>
+        </resources>
+      """.trimIndent(),
+    )
+
+    runTask(root, KMP_TASK_NAME)
+      .build()
+      .assertSuccess(":$KMP_TASK_NAME")
+
+    val outputFile = generatedFile("kotlin/catalogCommonMain/a/b/c/Strings.kt")
     assertTrue(outputFile.exists())
     outputFile.assertContains("package a.b.c")
     outputFile.assertContains("import x.y.z.SomeOtherName")
