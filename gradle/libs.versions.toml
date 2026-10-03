@@ -1,16 +1,24 @@
 [versions]
 agp = "8.13.1"
-kotlin = "2.2.20"
+blueprint = "2.4.2"
+junit6 = "6.1.3"
+kotlin = "2.4.20"
 
 [libraries]
 kotlinpoet = { module = "com.squareup:kotlinpoet", version = "2.2.0" }
 ktfmt = { module = "com.facebook:ktfmt", version = "0.64" } # only used in ktfmt.sh
-test-junit = { module = "junit:junit", version = "4.13.2" }
+test-assertk = { module = "com.willowtreeapps.assertk:assertk", version = "0.28.1" }
+test-blueprintAssertk = { module = "dev.jonpoulton.blueprint:test-assertk", version.ref = "blueprint" }
+test-junit4 = { module = "junit:junit", version = "4.13.2" }
+test-junit6-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit6" }
+test-junit6-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+test-junit6-vintage = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit6" } # runs junit4 tests
 test-truth = { module = "com.google.truth:truth", version = "1.4.5" }
 
 [plugins]
 agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 agp-lib = { id = "com.android.library", version.ref = "agp" }
+blueprint-test = { id = "dev.jonpoulton.blueprint.test", version.ref = "blueprint" }
 detekt = { id = "dev.detekt", version = "2.0.0-alpha.1" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version = "1.9.3" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

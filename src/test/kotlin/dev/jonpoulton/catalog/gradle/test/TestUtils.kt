@@ -1,104 +1,38 @@
-@file:Suppress("UnusedReceiverParameter")
-
 package dev.jonpoulton.catalog.gradle.test
 
+import assertk.Assert
+import blueprint.test.FileTree
+import blueprint.test.Scenario
+import blueprint.test.assertThatTask
+import blueprint.test.gradleProperties
+import blueprint.test.localProperties
+import blueprint.test.withArgument
+import blueprint.test.withConfigurationCache
 import com.google.common.truth.StringSubject
 import java.io.File
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-import org.gradle.api.Project
-import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
-import org.junit.Assume.assumeFalse
-import org.junit.Assume.assumeTrue
 
-internal const val ANDROID_TASK_NAME = "catalogMain"
-internal const val KMP_TASK_NAME = "catalogCommonMain"
+internal const val ANDROID_TASK_NAME = ":catalogMain"
+internal const val KMP_TASK_NAME = ":catalogCommonMain"
+internal const val COMPILE_SDK = 36
 
 internal fun StringSubject.isEqualToKotlin(@Language("kotlin") code: String) =
   isEqualTo(code.trimIndent())
 
-internal fun File.writeBuildFile(@Language("kotlin") code: String) =
-  resolve("build.gradle.kts").writeText(code)
+internal fun FileTree.Builder.androidLocalProperties() =
+  localProperties("sdk.dir=${ANDROID_SDK?.invariantSeparatorsPath}")
 
-internal fun File.writeSettingsFile() =
-  resolve("settings.gradle.kts")
-    .writeText(
-      """
-      pluginManagement {
-        repositories {
-          mavenCentral()
-          google()
-          gradlePluginPortal()
-        }
-      }
+internal fun FileTree.Builder.androidGradleProperties() =
+  gradleProperties("android.useAndroidX=true")
 
-      dependencyResolutionManagement {
-        repositories {
-          mavenCentral()
-          google()
-        }
-      }
-      """
-        .trimIndent()
-    )
+internal fun FileTree.Builder.androidStringsXml(@Language("xml") contents: String) =
+  ("src" / "main" / "res" / "values" / "strings.xml")(contents)
 
-internal fun File.writeAndroidStringsFile(
-  @Language("xml") code: String,
-  name: String = "strings.xml",
-  sourceSet: String = "main",
-) = resolve("src/$sourceSet/res/values/$name").also { it.parentFile.mkdirs() }.writeText(code)
+internal fun FileTree.Builder.kmpStringsXml(@Language("xml") contents: String) =
+  ("src" / "commonMain" / "composeResources" / "values" / "strings.xml")(contents)
 
-internal fun File.writeKmpStringsFile(
-  @Language("xml") code: String,
-  name: String = "strings.xml",
-) =
-  resolve("src/commonMain/composeResources/values/$name")
-    .also { it.parentFile.mkdirs() }
-    .writeText(code)
+internal fun Scenario.assertThatCatalogTask(task: String): Assert<GradleRunner> =
+  assertThatTask(task).withConfigurationCache().withArgument("--stacktrace")
 
-@Deprecated(message = "Needs at least one param", level = DeprecationLevel.ERROR)
-internal fun Project.runGradleTask(): Unit = error("Not supported")
-
-internal fun buildRunner(root: File): GradleRunner =
-  GradleRunner.create()
-    .withPluginClasspath()
-    .withProjectDir(root)
-    .withGradleVersion(System.getProperty("test.version.gradle"))
-    .withEnvironment(mapOf("ANDROID_HOME" to androidHomeOrSkip().absolutePath))
-
-internal fun runTask(root: File, task: String): GradleRunner = buildRunner(root).runTask(task)
-
-internal fun GradleRunner.runTask(task: String): GradleRunner =
-  withArguments(
-    task,
-    "--configuration-cache",
-    "--stacktrace",
-    "-Pandroid.useAndroidX=true", // needed for android builds to work, unused otherwise
-  )
-
-internal fun File.generatedFile(path: String): File = resolve("build/generated/$path")
-
-internal fun File.assertContains(@Language("kotlin") code: String) =
-  readText().let { contents ->
-    assertTrue(actual = contents.contains(code), message = contents)
-  }
-
-internal fun BuildResult.assertSuccess(task: String) =
-  assertEquals(
-    actual = task(task)?.outcome,
-    expected = TaskOutcome.SUCCESS,
-    message = output,
-  )
-
-internal fun androidHomeOrSkip(): File {
-  val androidHome = System.getProperty("test.androidHome")
-  assumeFalse(androidHome.isNullOrBlank())
-
-  val androidHomePath = File(androidHome)
-  assumeTrue(androidHomePath.exists())
-
-  return androidHomePath
-}
+internal fun Scenario.generatedFile(path: String): File = rootDir.resolve("build/generated/$path")
