@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 plugins {
   alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.publish)
+  alias(libs.plugins.blueprint.test)
   alias(libs.plugins.detekt)
   `java-gradle-plugin`
 }
@@ -30,7 +31,7 @@ kotlin {
     jvmTarget = JvmTarget.fromTarget(javaVersionStr)
   }
 
-  @OptIn(ExperimentalAbiValidation::class) abiValidation { enabled = true }
+  @OptIn(ExperimentalAbiValidation::class) abiValidation()
 }
 
 detekt {
@@ -51,16 +52,6 @@ gradlePlugin.plugins.create("catalog") {
   implementationClass = "dev.jonpoulton.catalog.gradle.CatalogPlugin"
 }
 
-// Adapted from
-// https://github.com/GradleUp/shadow/blob/1d7b0863fed3126bf376f11d563e9176de176cd3/build.gradle.kts#L63-L65
-// Allows gradle test cases to use the same classpath as the parent build - meaning we don't need to
-// specify versions
-// when loading plugins into test projects.
-val testPluginClasspath by configurations.registering { isCanBeResolved = true }
-
-// Plugins used in tests could be resolved in classpath.
-tasks.pluginUnderTestMetadata { pluginClasspath.from(testPluginClasspath) }
-
 dependencies {
   fun compileOnly(plugin: Provider<PluginDependency>) =
     with(plugin.get()) { compileOnly("$pluginId:$pluginId.gradle.plugin:$version") }
@@ -77,9 +68,14 @@ dependencies {
 
   implementation(libs.kotlinpoet)
 
+  testCompileOnly(libs.test.junit6.api)
   testImplementation(kotlin("test"))
-  testImplementation(libs.test.junit)
+  testImplementation(libs.test.assertk)
+  testImplementation(libs.test.blueprintAssertk)
+  testImplementation(libs.test.junit4)
   testImplementation(libs.test.truth)
+  testRuntimeOnly(libs.test.junit6.launcher)
+  testRuntimeOnly(libs.test.junit6.vintage)
 
   testPluginClasspath(libs.plugins.agp.kmp)
   testPluginClasspath(libs.plugins.agp.lib)
@@ -115,6 +111,7 @@ fun androidHome(): String? {
 }
 
 tasks.test {
+  useJUnitPlatform()
   systemProperty("test.version.gradle", GradleVersion.current().version)
   androidHome()?.let { systemProperty("test.androidHome", it) }
 }
