@@ -12,7 +12,7 @@ import dev.jonpoulton.catalog.gradle.internal.ResourceType
 
 internal class ColorCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
-  override val resourceType: ResourceType = ResourceType.Color,
+  override val resourceType: ResourceType = Color,
 ) : CatalogWriter<ResourceEntry.XmlItem.Color>() {
   private val colorResourceMember by lazy { resourceAccessor("colorResource") }
   private val composeColorClass = ClassName("androidx.compose.ui.graphics", "Color")
