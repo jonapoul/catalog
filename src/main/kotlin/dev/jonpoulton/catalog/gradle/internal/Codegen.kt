@@ -29,24 +29,41 @@ internal class Codegen(
     )
 
   fun start(sourceSetDirs: Set<File>, outputDir: File) {
+    val errors = mutableListOf<String>()
     val resourceEntries =
       sourceSetDirs
         .asSequence()
         .flatMap { it.walk() }
         .filterNot { it.isDirectory }
-        .flatMap { it.toResourceEntries() }
+        .flatMap { it.toResourceEntries(errors::add) }
         .distinctBy { it.name } // group by name to eliminate alternative resources
         .toList()
 
+    val reducedEntries =
+      resourceEntries
+        .groupBy { it::class } // groups by type
+        .map { it.value }
+        .flatMap { groupedByType ->
+          groupedByType.groupBy { it.name }.map { it.value }
+        }
+        .mapNotNull { resources ->
+          try {
+            resourceReducer.reduce(resources)
+          } catch (e: IllegalArgumentException) {
+            errors += e.message.orEmpty()
+            null
+          }
+        }
+
+    check(errors.isEmpty()) {
+      errors.joinToString(prefix = "Found ${errors.size} invalid resources:\n", separator = "\n") {
+        "  - $it"
+      }
+    }
+
     outputDir.mkdirs()
 
-    resourceEntries
-      .groupBy { it::class } // groups by type
-      .map { it.value }
-      .flatMap { groupedByType ->
-        groupedByType.groupBy { it.name }.map { it.value }
-      } // groups by resource name
-      .map(resourceReducer::reduce)
+    reducedEntries
       .groupBy { it::class } // groups them back by type to write Kotlin files
       .forEach { (type, resources) ->
         @Suppress("UNCHECKED_CAST")
@@ -57,10 +74,10 @@ internal class Codegen(
       }
   }
 
-  private fun File.toResourceEntries(): Iterable<ResourceEntry> =
+  private fun File.toResourceEntries(onError: (String) -> Unit): Iterable<ResourceEntry> =
     when {
       parentFile.name.startsWith("values") && lowercaseExtension == "xml" ->
-        valueResourceParser.parseFile(this)
+        valueResourceParser.parseFile(this, onError)
       parentFile.name.startsWith("drawable") -> toDrawableResourceEntry()?.let { listOf(it) }
       else -> null
     } ?: emptyList()

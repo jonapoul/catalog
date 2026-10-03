@@ -17,7 +17,7 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
   private val fsPattern =
     Pattern.compile("%(\\d+\\$)?([-#+ 0,(<]*)?(\\d+)?(\\.\\d+)?([tT])?([diufFeEgGxXoscpaAn%])")
 
-  fun parseFile(file: File): Set<ResourceEntry> {
+  fun parseFile(file: File, onError: (String) -> Unit = { error(it) }): Set<ResourceEntry> {
     val doc = docBuilder.parse(file)
     val resourcesElements = doc.getElementsByTagName("resources").item(0)
     val resources = mutableSetOf<ResourceEntry>()
@@ -29,24 +29,10 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
         Node.ELEMENT_NODE -> {
           val element = node as Element
           val name = node.attributes.getNamedItem("name").nodeValue
-          when (element.tagName) {
-            "item" -> null
-            "string" -> readString(node, name, file, precedingComment)
-            "plurals" ->
-              ResourceEntry.XmlItem.WithArgs.Plural(
-                file,
-                name,
-                precedingComment,
-                node.parsePlurals(name),
-              )
-            "string-array" -> ResourceEntry.XmlItem.StringArray(file, name, precedingComment)
-            "color" -> ResourceEntry.XmlItem.Color(file, name, precedingComment)
-            "dimen" -> ResourceEntry.XmlItem.Dimen(file, name, precedingComment)
-            "integer" -> ResourceEntry.XmlItem.Integer(file, name, precedingComment)
-            "id" -> null
-            else -> null
-          }?.let {
-            resources += it
+          try {
+            parseElement(element, name, file, precedingComment)?.let { resources += it }
+          } catch (e: IllegalArgumentException) {
+            onError(e.message.orEmpty())
           }
           precedingComment = null
         }
@@ -58,6 +44,28 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
     }
     return resources
   }
+
+  private fun parseElement(
+    element: Element,
+    name: String,
+    file: File,
+    precedingComment: String?,
+  ): ResourceEntry? =
+    when (element.tagName) {
+      "string" -> readString(element, name, file, precedingComment)
+      "plurals" ->
+        ResourceEntry.XmlItem.WithArgs.Plural(
+          file,
+          name,
+          precedingComment,
+          element.parsePlurals(name),
+        )
+      "string-array" -> ResourceEntry.XmlItem.StringArray(file, name, precedingComment)
+      "color" -> ResourceEntry.XmlItem.Color(file, name, precedingComment)
+      "dimen" -> ResourceEntry.XmlItem.Dimen(file, name, precedingComment)
+      "integer" -> ResourceEntry.XmlItem.Integer(file, name, precedingComment)
+      else -> null
+    }
 
   private fun readString(
     node: Node,
@@ -105,11 +113,11 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
             sharedArg = arg
           }
 
-          arg.type != sharedArg.type -> {
-            error(
+          else -> {
+            require(arg.type == sharedArg.type) {
               "Inconsistent argument types in plural resource $pluralName. Make sure args with the" +
                 " same index across all quantity entries have the same type."
-            )
+            }
           }
         }
       }
@@ -165,8 +173,7 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
       args += arg
     }
     require(!hasPositionalArgs || implicitPosition == 0) {
-      // TODO improve error message for debugging
-      "Argument positions should be either all explicit or all implicit"
+      "Argument positions in $resourceName should be either all explicit or all implicit"
     }
     return args.values.toList()
   }
