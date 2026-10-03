@@ -12,7 +12,7 @@ import dev.jonpoulton.catalog.gradle.internal.ResourceType
 
 internal class PluralCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
-  override val resourceType: ResourceType = ResourceType.Plural,
+  override val resourceType: ResourceType = Plural,
 ) : CatalogWriter<ResourceEntry.XmlItem.WithArgs.Plural>() {
   private val experimentalComposeUiApiClass =
     ClassName("androidx.compose.ui", "ExperimentalComposeUiApi")

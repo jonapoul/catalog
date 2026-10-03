@@ -12,7 +12,7 @@ import dev.jonpoulton.catalog.gradle.internal.ResourceType
 
 internal class DimenCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
-  override val resourceType: ResourceType = ResourceType.Dimen,
+  override val resourceType: ResourceType = Dimen,
 ) : CatalogWriter<ResourceEntry.XmlItem.Dimen>() {
   private val dimensionResourceMember by lazy { resourceAccessor("dimensionResource") }
   private val composeDpClass = ClassName(packageName = "androidx.compose.ui.unit", "Dp")

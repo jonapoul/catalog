@@ -97,14 +97,14 @@ internal class Codegen(
         ResourceEntry.Drawable(
           file = this,
           name = nameWithoutExtension.substringBeforeLast(".9"),
-          type = ResourceEntry.Drawable.Type.NINE_PATCH,
+          type = NINE_PATCH,
         )
 
       isValidBitmap ->
         ResourceEntry.Drawable(
           file = this,
           name = nameWithoutExtension,
-          type = ResourceEntry.Drawable.Type.BITMAP,
+          type = BITMAP,
         )
 
       lowercaseExtension == "xml" -> drawableResourceParser.parseFile(this)

@@ -30,7 +30,7 @@ class ColorCatalogWriterTest {
     packageName: String = "com.example",
     internal: Boolean = false,
     prefix: String = "",
-    parameterNaming: CatalogParameterNaming = CatalogParameterNaming.Arg,
+    parameterNaming: CatalogParameterNaming = Arg,
     nameTransform: NameTransform = NameTransform.CamelCase,
   ) =
     ColorCatalogWriter(

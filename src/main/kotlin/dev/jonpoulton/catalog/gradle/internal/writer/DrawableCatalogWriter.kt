@@ -11,7 +11,6 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
-import dev.jonpoulton.catalog.gradle.internal.ResourceEntry.Drawable.Type
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
 
 internal class DrawableCatalogWriter(
@@ -42,7 +41,7 @@ internal class DrawableCatalogWriter(
     val statementFormat: String
     val returnType: TypeName
     when {
-      resource.type == Type.ANIMATED_VECTOR -> {
+      resource.type == ANIMATED_VECTOR -> {
         statementFormat = "return %T.%M(%T.drawable.%L)"
         statementArgs =
           arrayOf(composeAnimatorVectorClass, animatedVectorResourceMember, rClass, resource.name)
@@ -66,7 +65,7 @@ internal class DrawableCatalogWriter(
       PropertySpec.builder(config.nameTransform(resource.name), returnType)
         .mutable(false)
         .addInternalIfConfigured()
-        .apply { if (resource.type == Type.ANIMATED_VECTOR) addAnnotation(optInAnnotation) }
+        .apply { if (resource.type == ANIMATED_VECTOR) addAnnotation(optInAnnotation) }
         .getter(getter)
         .build()
     )

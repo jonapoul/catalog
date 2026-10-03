@@ -25,12 +25,12 @@ class DrawableCatalogWriterTest {
       ResourceEntry.Drawable(
         file = File("."),
         name = "drawable_1",
-        ResourceEntry.Drawable.Type.BITMAP,
+        BITMAP,
       ),
       ResourceEntry.Drawable(
         file = File("."),
         name = "drawable_2",
-        ResourceEntry.Drawable.Type.ANIMATED_VECTOR,
+        ANIMATED_VECTOR,
       ),
     )
 
@@ -38,7 +38,7 @@ class DrawableCatalogWriterTest {
     packageName: String = "com.example",
     internal: Boolean = false,
     prefix: String = "",
-    parameterNaming: CatalogParameterNaming = CatalogParameterNaming.Arg,
+    parameterNaming: CatalogParameterNaming = Arg,
     nameTransform: NameTransform = NameTransform.CamelCase,
   ) =
     DrawableCatalogWriter(

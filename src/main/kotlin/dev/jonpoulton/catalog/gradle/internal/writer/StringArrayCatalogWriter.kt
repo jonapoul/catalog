@@ -13,7 +13,7 @@ import dev.jonpoulton.catalog.gradle.internal.ResourceType
 
 internal class StringArrayCatalogWriter(
   override val config: GenerateResourcesTask.TaskConfig,
-  override val resourceType: ResourceType = ResourceType.StringArray,
+  override val resourceType: ResourceType = StringArray,
 ) : CatalogWriter<ResourceEntry.XmlItem.StringArray>() {
   private val stringArrayResourceMember by lazy { resourceAccessor("stringArrayResource") }
 

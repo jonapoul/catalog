@@ -27,7 +27,7 @@ class StringCatalogWriterTest {
     packageName: String = "com.example",
     internal: Boolean = false,
     prefix: String = "",
-    parameterNaming: CatalogParameterNaming = CatalogParameterNaming.Arg,
+    parameterNaming: CatalogParameterNaming = Arg,
     nameTransform: NameTransform = NameTransform.CamelCase,
   ) =
     StringCatalogWriter(
@@ -273,8 +273,7 @@ class StringCatalogWriterTest {
 
   @Test
   fun `GIVEN type-named args THEN generate public properties with no prefix`() {
-    stringCatalogWriter(parameterNaming = CatalogParameterNaming.ByType)
-      .write(resources, codegenDestination)
+    stringCatalogWriter(parameterNaming = ByType).write(resources, codegenDestination)
     assertThat(codegenFile.readBytes().toString(Charset.defaultCharset()))
       .isEqualToKotlin(
         """

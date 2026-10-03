@@ -28,6 +28,7 @@ kotlin {
 
   compilerOptions {
     allWarningsAsErrors = true
+    freeCompilerArgs.add("-Xcontext-sensitive-resolution")
     jvmTarget = JvmTarget.fromTarget(javaVersionStr)
   }
 
