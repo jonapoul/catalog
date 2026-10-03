@@ -2,7 +2,6 @@ package dev.jonpoulton.catalog.gradle.test
 
 import java.io.File
 import org.junit.jupiter.api.extension.ConditionEvaluationResult
-import org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled
 import org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled
 import org.junit.jupiter.api.extension.ExecutionCondition
 import org.junit.jupiter.api.extension.ExtendWith
@@ -20,6 +19,6 @@ private class AndroidSdkCondition : ExecutionCondition {
     if (ANDROID_SDK?.isDirectory == true) {
       enabled("Android SDK at $ANDROID_SDK")
     } else {
-      disabled("No Android SDK found, set ANDROID_HOME")
+      error("No Android SDK found, set ANDROID_HOME")
     }
 }
