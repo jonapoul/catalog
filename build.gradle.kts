@@ -1,14 +1,12 @@
 import dev.detekt.gradle.Detekt
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML
-import java.util.Properties
 
 plugins {
   alias(libs.plugins.kotlinJvm)
   alias(libs.plugins.publish)
   alias(libs.plugins.detekt)
-  alias(libs.plugins.ktlint)
   `java-gradle-plugin`
 }
 
@@ -32,13 +30,7 @@ kotlin {
     jvmTarget = JvmTarget.fromTarget(javaVersionStr)
   }
 
-  @OptIn(ExperimentalAbiValidation::class)
-  abiValidation { enabled = true }
-}
-
-ktlint {
-  version = libs.versions.ktlint
-  reporters { reporter(HTML) }
+  @OptIn(ExperimentalAbiValidation::class) abiValidation { enabled = true }
 }
 
 detekt {
@@ -47,8 +39,11 @@ detekt {
 }
 
 val detektTasks = tasks.withType(Detekt::class)
+
 detektTasks.configureEach { reports.html.required = true }
+
 val detektCheck by tasks.registering { dependsOn(detektTasks) }
+
 tasks.check { dependsOn(detektCheck) }
 
 gradlePlugin.plugins.create("catalog") {
@@ -56,8 +51,10 @@ gradlePlugin.plugins.create("catalog") {
   implementationClass = "dev.jonpoulton.catalog.gradle.CatalogPlugin"
 }
 
-// Adapted from https://github.com/GradleUp/shadow/blob/1d7b0863fed3126bf376f11d563e9176de176cd3/build.gradle.kts#L63-L65
-// Allows gradle test cases to use the same classpath as the parent build - meaning we don't need to specify versions
+// Adapted from
+// https://github.com/GradleUp/shadow/blob/1d7b0863fed3126bf376f11d563e9176de176cd3/build.gradle.kts#L63-L65
+// Allows gradle test cases to use the same classpath as the parent build - meaning we don't need to
+// specify versions
 // when loading plugins into test projects.
 val testPluginClasspath by configurations.registering { isCanBeResolved = true }
 
@@ -99,10 +96,9 @@ fun androidHome(): String? {
     return androidHome
   }
 
-  val localProps = rootProject
-    .file("local.properties")
-    .takeIf { it.exists() }
-    ?: rootDir.resolve("../local.properties")
+  val localProps =
+    rootProject.file("local.properties").takeIf { it.exists() }
+      ?: rootDir.resolve("../local.properties")
 
   if (localProps.exists()) {
     val properties = Properties()

@@ -12,7 +12,9 @@ public fun interface NameTransform {
     public fun chained(): NameTransform = error("Not supported")
 
     /**
-     * Can be used to chain together any combination of other [NameTransform]s, in order of declaration. E.g.
+     * Can be used to chain together any combination of other [NameTransform]s, in order of
+     * declaration. E.g.
+     *
      * ```
      * val transform = NameTransform.chained(
      *   NameTransform.removePrefix("my"),
@@ -50,7 +52,9 @@ public fun interface NameTransform {
      * val test_string: String
      * ```
      */
-    public fun removePrefix(prefix: String): NameTransform = NameTransform { name -> name.removePrefix(prefix) }
+    public fun removePrefix(prefix: String): NameTransform = NameTransform { name ->
+      name.removePrefix(prefix)
+    }
 
     /**
      * Resource name of `"my_test_string"` with suffix of `"_string"` transformed to property like:
@@ -58,6 +62,8 @@ public fun interface NameTransform {
      * val my_test: String
      * ```
      */
-    public fun removeSuffix(suffix: String): NameTransform = NameTransform { name -> name.removeSuffix(suffix) }
+    public fun removeSuffix(suffix: String): NameTransform = NameTransform { name ->
+      name.removeSuffix(suffix)
+    }
   }
 }

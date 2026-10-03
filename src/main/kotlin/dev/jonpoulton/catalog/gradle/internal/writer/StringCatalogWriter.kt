@@ -17,7 +17,7 @@ internal class StringCatalogWriter(
   private val stringResourceMember by lazy { resourceAccessor("stringResource") }
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.WithArgs.String,
+    resource: ResourceEntry.XmlItem.WithArgs.String
   ): TypeSpec.Builder {
     val sortedArgs = resource.args.sortedBy { it.position }
     val formattedParameters = getFormattedParameters(sortedArgs, config.parameterNaming)
@@ -32,7 +32,13 @@ internal class StringCatalogWriter(
       addProperty(resource, config.nameTransform, statementFormat, statementArgs)
     } else {
       // At least one arg, so make a composable function
-      addFunction(resource, config.nameTransform, statementFormat, statementArgs, formattedParameters)
+      addFunction(
+        resource,
+        config.nameTransform,
+        statementFormat,
+        statementArgs,
+        formattedParameters,
+      )
     }
   }
 
@@ -42,19 +48,19 @@ internal class StringCatalogWriter(
     statementFormat: String,
     statementArgs: MutableList<Any>,
   ): TypeSpec.Builder {
-    val getter = FunSpec
-      .getterBuilder()
-      .addAnnotation(composableClass)
-      .addReadOnlyComposable(config)
-      .addStatement(statementFormat, *statementArgs.toTypedArray())
-      .build()
-    val property = PropertySpec
-      .builder(nameTransform(resource.name), String::class)
-      .addKdoc(resource)
-      .addInternalIfConfigured()
-      .mutable(false)
-      .getter(getter)
-      .build()
+    val getter =
+      FunSpec.getterBuilder()
+        .addAnnotation(composableClass)
+        .addReadOnlyComposable(config)
+        .addStatement(statementFormat, *statementArgs.toTypedArray())
+        .build()
+    val property =
+      PropertySpec.builder(nameTransform(resource.name), String::class)
+        .addKdoc(resource)
+        .addInternalIfConfigured()
+        .mutable(false)
+        .getter(getter)
+        .build()
     return addProperty(property)
   }
 
@@ -65,16 +71,16 @@ internal class StringCatalogWriter(
     statementArgs: MutableList<Any>,
     formattedParameters: List<FormattedParameter>,
   ): TypeSpec.Builder {
-    val function = FunSpec
-      .builder(nameTransform(resource.name))
-      .addKdoc(resource)
-      .addAnnotation(composableClass)
-      .addReadOnlyComposable(config)
-      .addInternalIfConfigured()
-      .addFormattedParameters(formattedParameters)
-      .returns(String::class)
-      .addStatement(statementFormat, *statementArgs.toTypedArray())
-      .build()
+    val function =
+      FunSpec.builder(nameTransform(resource.name))
+        .addKdoc(resource)
+        .addAnnotation(composableClass)
+        .addReadOnlyComposable(config)
+        .addInternalIfConfigured()
+        .addFormattedParameters(formattedParameters)
+        .returns(String::class)
+        .addStatement(statementFormat, *statementArgs.toTypedArray())
+        .build()
     return addFunction(function)
   }
 }

@@ -32,21 +32,20 @@ internal class DrawableCatalogWriter(
   private val composeAnimatorVectorClass =
     ClassName("androidx.compose.animation.graphics.vector", "AnimatedImageVector")
 
-  private val optInAnnotation = AnnotationSpec
-    .builder(optInClass)
-    .addMember("%T::class", experimentalAnimationGraphicsApiClass)
-    .build()
+  private val optInAnnotation =
+    AnnotationSpec.builder(optInClass)
+      .addMember("%T::class", experimentalAnimationGraphicsApiClass)
+      .build()
 
-  override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.Drawable,
-  ): TypeSpec.Builder {
+  override fun TypeSpec.Builder.addResource(resource: ResourceEntry.Drawable): TypeSpec.Builder {
     val statementArgs: Array<Any>
     val statementFormat: String
     val returnType: TypeName
     when {
       resource.type == Type.ANIMATED_VECTOR -> {
         statementFormat = "return %T.%M(%T.drawable.%L)"
-        statementArgs = arrayOf(composeAnimatorVectorClass, animatedVectorResourceMember, rClass, resource.name)
+        statementArgs =
+          arrayOf(composeAnimatorVectorClass, animatedVectorResourceMember, rClass, resource.name)
         returnType = composeAnimatorVectorClass
       }
 
@@ -57,20 +56,19 @@ internal class DrawableCatalogWriter(
       }
     }
 
-    val getter = FunSpec
-      .getterBuilder()
-      .addAnnotation(composableClass)
-      .addStatement(statementFormat, *statementArgs)
-      .build()
+    val getter =
+      FunSpec.getterBuilder()
+        .addAnnotation(composableClass)
+        .addStatement(statementFormat, *statementArgs)
+        .build()
 
     return addProperty(
-      PropertySpec
-        .builder(config.nameTransform(resource.name), returnType)
+      PropertySpec.builder(config.nameTransform(resource.name), returnType)
         .mutable(false)
         .addInternalIfConfigured()
         .apply { if (resource.type == Type.ANIMATED_VECTOR) addAnnotation(optInAnnotation) }
         .getter(getter)
-        .build(),
+        .build()
     )
   }
 }

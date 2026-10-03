@@ -18,26 +18,25 @@ internal class DimenCatalogWriter(
   private val composeDpClass = ClassName(packageName = "androidx.compose.ui.unit", "Dp")
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.Dimen,
+    resource: ResourceEntry.XmlItem.Dimen
   ): TypeSpec.Builder {
     val statementFormat = "return %M(%T.dimen.%L)"
     val statementArgs = arrayOf(dimensionResourceMember, rClass, resource.name)
 
-    val getter = FunSpec
-      .getterBuilder()
-      .addAnnotation(composableClass)
-      .addReadOnlyComposable(config)
-      .addStatement(statementFormat, *statementArgs)
-      .build()
+    val getter =
+      FunSpec.getterBuilder()
+        .addAnnotation(composableClass)
+        .addReadOnlyComposable(config)
+        .addStatement(statementFormat, *statementArgs)
+        .build()
 
     return addProperty(
-      PropertySpec
-        .builder(config.nameTransform(resource.name), composeDpClass)
+      PropertySpec.builder(config.nameTransform(resource.name), composeDpClass)
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)
         .getter(getter)
-        .build(),
+        .build()
     )
   }
 }
