@@ -19,7 +19,7 @@ class ValueResourceParserTest {
   fun `parseFile()`() {
     @Language("XML")
     val xmlContent =
-      """
+      $$"""
       |<resources>
       |   <string name="string_no_args_wo_docs">String no args w/o docs</string>
       |   <!-- Some test doc -->
@@ -32,8 +32,8 @@ class ValueResourceParserTest {
       |   -->
       |   <string name="string_no_args_with_ktdocs">String no args w/o docs</string>
       |   <string name="string_with_non_positioned_args">String with %d non-positioned %d args</string>
-      |   <string name="string_with_positioned_args">Args %3${'$'}d are %1${'$'}f out %4${'$'}s of %2${'$'}c order</string>
-      |   <string name="unformatted_string" formatted="false">Some %1${'$'}f unformatted %2${'$'}s args %3${'$'}d</string>
+      |   <string name="string_with_positioned_args">Args %3$d are %1$f out %4$s of %2$c order</string>
+      |   <string name="unformatted_string" formatted="false">Some %1$f unformatted %2$s args %3$d</string>
       |   <string name="double_percent_symbol">Double %% symbol</string>
       |   <string name="escaped_percent_symbol">Escaped \% symbol</string>
       |   <integer name="integer">12345</integer>
@@ -42,8 +42,8 @@ class ValueResourceParserTest {
       |   <integer name="zero_with_comment">0</integer>
       |   <!-- there's no arg count validation, the only risk is going out of bounds -->
       |   <plurals name="some_plural">
-      |       <item quantity="one">Single %1${'$'}d argument</item>
-      |       <item quantity="other">Double %2${'$'}d arguments %1${'$'}d</item>
+      |       <item quantity="one">Single %1$d argument</item>
+      |       <item quantity="other">Double %2$d arguments %1$d</item>
       |   </plurals>
       |   <string-array name="some_string_array">
       |       <item>Item 1</item>
