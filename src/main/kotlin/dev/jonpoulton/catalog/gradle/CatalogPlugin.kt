@@ -164,9 +164,7 @@ public class CatalogPlugin : Plugin<Project> {
    * Gets all the /res folders for a given source set name. This should only get one item, unless
    * another source set has been added by another plugin or Gradle script.
    */
-  private fun CommonExtension.getQualifiedSourceSetsByName(
-    sourceSetName: String
-  ): Set<File> =
+  private fun CommonExtension.getQualifiedSourceSetsByName(sourceSetName: String): Set<File> =
     sourceSets.getByName(sourceSetName).res.let { res ->
       (res as DefaultAndroidSourceDirectorySet).srcDirs
     }
