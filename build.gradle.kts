@@ -52,12 +52,12 @@ gradlePlugin.plugins.create("catalog") {
   implementationClass = "dev.jonpoulton.catalog.gradle.CatalogPlugin"
 }
 
-dependencies {
-  fun compileOnly(plugin: Provider<PluginDependency>) =
-    with(plugin.get()) { compileOnly("$pluginId:$pluginId.gradle.plugin:$version") }
+fun Provider<PluginDependency>.artifact() =
+  map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}") }
 
-  fun testPluginClasspath(plugin: Provider<PluginDependency>) =
-    with(plugin.get()) { testPluginClasspath("$pluginId:$pluginId.gradle.plugin:$version") }
+dependencies {
+  fun compileOnly(plugin: Provider<PluginDependency>) = compileOnly(plugin.artifact())
+  fun testPluginClasspath(plugin: Provider<PluginDependency>) = testPluginClasspath(plugin.artifact())
 
   compileOnly(libs.plugins.agp.kmp)
   compileOnly(libs.plugins.agp.lib)
