@@ -18,22 +18,21 @@ internal class ColorCatalogWriter(
   private val composeColorClass = ClassName("androidx.compose.ui.graphics", "Color")
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.Color,
-  ): TypeSpec.Builder = addProperty(
-    PropertySpec
-      .builder(config.nameTransform(resource.name), composeColorClass)
-      .addKdoc(resource)
-      .addInternalIfConfigured()
-      .mutable(false)
-      .getter(buildGetter(resource))
-      .build(),
-  )
+    resource: ResourceEntry.XmlItem.Color
+  ): TypeSpec.Builder =
+    addProperty(
+      PropertySpec.builder(config.nameTransform(resource.name), composeColorClass)
+        .addKdoc(resource)
+        .addInternalIfConfigured()
+        .mutable(false)
+        .getter(buildGetter(resource))
+        .build()
+    )
 
   private fun buildGetter(resource: ResourceEntry.XmlItem.Color): FunSpec {
     val statementFormat = "return %M(%T.color.%L)"
     val statementArgs = arrayOf(colorResourceMember, rClass, resource.name)
-    return FunSpec
-      .getterBuilder()
+    return FunSpec.getterBuilder()
       .addAnnotation(composableClass)
       .addReadOnlyComposable(config)
       .addStatement(statementFormat, *statementArgs)

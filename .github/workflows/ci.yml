@@ -17,6 +17,21 @@ permissions:
   checks: write
 
 jobs:
+  ktfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "zulu"
+
+      - name: Check formatting
+        run: scripts/ktfmt.sh check --force
+
   check:
     runs-on: ubuntu-latest
     steps:

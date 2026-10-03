@@ -2,16 +2,17 @@
 
 package dev.jonpoulton.catalog.gradle.internal
 
-import org.w3c.dom.Comment
-import org.w3c.dom.Element
-import org.w3c.dom.Node
 import java.io.File
 import java.lang.Integer.max
 import java.util.regex.Pattern
 import javax.xml.parsers.DocumentBuilder
+import org.w3c.dom.Comment
+import org.w3c.dom.Element
+import org.w3c.dom.Node
 
 internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
-  // Original pattern from String.format() is %(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])
+  // Original pattern from String.format() is %(\\d+\\$)?([-#+
+  // 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])
   // https://en.wikipedia.org/wiki/Printf_format_string#Type_field
   private val fsPattern =
     Pattern.compile("%(\\d+\\$)?([-#+ 0,(<]*)?(\\d+)?(\\.\\d+)?([tT])?([diufFeEgGxXoscpaAn%])")
@@ -31,7 +32,13 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
           when (element.tagName) {
             "item" -> null
             "string" -> readString(node, name, file, precedingComment)
-            "plurals" -> ResourceEntry.XmlItem.WithArgs.Plural(file, name, precedingComment, node.parsePlurals(name))
+            "plurals" ->
+              ResourceEntry.XmlItem.WithArgs.Plural(
+                file,
+                name,
+                precedingComment,
+                node.parsePlurals(name),
+              )
             "string-array" -> ResourceEntry.XmlItem.StringArray(file, name, precedingComment)
             "color" -> ResourceEntry.XmlItem.Color(file, name, precedingComment)
             "dimen" -> ResourceEntry.XmlItem.Dimen(file, name, precedingComment)
@@ -71,15 +78,14 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
       if (child.nodeType == Node.ELEMENT_NODE) {
         val childElement = child as Element
         if (childElement.tagName == "item") {
-          val quantityArgs = childElement
-            .textContent
-            .extractArgs(pluralName)
-            .associateBy { it.position }
+          val quantityArgs =
+            childElement.textContent.extractArgs(pluralName).associateBy { it.position }
           if (quantityArgs.isNotEmpty()) { // plurals with no argument
-            highestArgPosition = max(
-              highestArgPosition,
-              quantityArgs.values.maxOf { it.position },
-            )
+            highestArgPosition =
+              max(
+                highestArgPosition,
+                quantityArgs.values.maxOf { it.position },
+              )
           }
           allArgs += quantityArgs
         }
@@ -102,7 +108,7 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
           arg.type != sharedArg.type -> {
             error(
               "Inconsistent argument types in plural resource $pluralName. Make sure args with the" +
-                " same index across all quantity entries have the same type.",
+                " same index across all quantity entries have the same type."
             )
           }
         }
@@ -136,24 +142,21 @@ internal class ValueResourceParser(private val docBuilder: DocumentBuilder) {
       val isDoublePercent = start < end && this[start + 1] == '%'
       if (isEscapedWithBackslash || isDoublePercent) continue
 
-      val type = matcher
-        .group(6)
-        .first()
-        .lowercase()
-        .first()
+      val type = matcher.group(6).first().lowercase().first()
       val positionGroup = matcher.group(1)
-      val arg = if (positionGroup != null) {
-        require(positionGroup.endsWith("$")) {
-          // TODO improve error message for debugging
-          "Unexpected position placeholder: $positionGroup"
+      val arg =
+        if (positionGroup != null) {
+          require(positionGroup.endsWith("$")) {
+            // TODO improve error message for debugging
+            "Unexpected position placeholder: $positionGroup"
+          }
+          hasPositionalArgs = true
+          val position = positionGroup.take(positionGroup.lastIndex).toInt()
+          position to StringArg(position, type)
+        } else {
+          val position = ++implicitPosition
+          position to StringArg(position, type)
         }
-        hasPositionalArgs = true
-        val position = positionGroup.take(positionGroup.lastIndex).toInt()
-        position to StringArg(position, type)
-      } else {
-        val position = ++implicitPosition
-        position to StringArg(position, type)
-      }
       val existingArg = args[arg.first]
       require(existingArg == null || existingArg.type == arg.second.type) {
         "Argument #${arg.first} appears multiple times in $resourceName with different " +

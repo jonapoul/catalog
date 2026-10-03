@@ -17,26 +17,25 @@ internal class IntegerCatalogWriter(
   private val integerResourceMember by lazy { resourceAccessor("integerResource") }
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.Integer,
+    resource: ResourceEntry.XmlItem.Integer
   ): TypeSpec.Builder {
     val statementFormat = "return %M(%T.integer.%L)"
     val statementArgs = arrayOf(integerResourceMember, rClass, resource.name)
 
-    val getter = FunSpec
-      .getterBuilder()
-      .addAnnotation(composableClass)
-      .addReadOnlyComposable(config)
-      .addStatement(statementFormat, *statementArgs)
-      .build()
+    val getter =
+      FunSpec.getterBuilder()
+        .addAnnotation(composableClass)
+        .addReadOnlyComposable(config)
+        .addStatement(statementFormat, *statementArgs)
+        .build()
 
     return addProperty(
-      PropertySpec
-        .builder(config.nameTransform(resource.name), Int::class.asClassName())
+      PropertySpec.builder(config.nameTransform(resource.name), Int::class.asClassName())
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)
         .getter(getter)
-        .build(),
+        .build()
     )
   }
 }

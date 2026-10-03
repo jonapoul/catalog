@@ -1,10 +1,10 @@
 [versions]
 agp = "8.13.1"
 kotlin = "2.2.20"
-ktlint = "1.8.0"
 
 [libraries]
 kotlinpoet = { module = "com.squareup:kotlinpoet", version = "2.2.0" }
+ktfmt = { module = "com.facebook:ktfmt", version = "0.64" } # only used in ktfmt.sh
 test-junit = { module = "junit:junit", version = "4.13.2" }
 test-truth = { module = "com.google.truth:truth", version = "1.4.5" }
 
@@ -17,5 +17,4 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "14.0.1" }
 publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }

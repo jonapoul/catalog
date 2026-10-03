@@ -18,30 +18,27 @@ internal class StringArrayCatalogWriter(
   private val stringArrayResourceMember by lazy { resourceAccessor("stringArrayResource") }
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.StringArray,
+    resource: ResourceEntry.XmlItem.StringArray
   ): TypeSpec.Builder {
     val statementArgs = arrayOf(stringArrayResourceMember, rClass, resource.name)
     val statementFormat = "return %M(%T.array.%L)"
 
-    val stringArrayType = Array::class
-      .asClassName()
-      .parameterizedBy(String::class.asClassName())
+    val stringArrayType = Array::class.asClassName().parameterizedBy(String::class.asClassName())
 
-    val getter = FunSpec
-      .getterBuilder()
-      .addAnnotation(composableClass)
-      .addReadOnlyComposable(config)
-      .addStatement(statementFormat, *statementArgs)
-      .build()
+    val getter =
+      FunSpec.getterBuilder()
+        .addAnnotation(composableClass)
+        .addReadOnlyComposable(config)
+        .addStatement(statementFormat, *statementArgs)
+        .build()
 
     return addProperty(
-      PropertySpec
-        .builder(config.nameTransform(resource.name), stringArrayType)
+      PropertySpec.builder(config.nameTransform(resource.name), stringArrayType)
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)
         .getter(getter)
-        .build(),
+        .build()
     )
   }
 }

@@ -10,12 +10,12 @@ import dev.jonpoulton.catalog.gradle.test.writeAndroidStringsFile
 import dev.jonpoulton.catalog.gradle.test.writeBuildFile
 import dev.jonpoulton.catalog.gradle.test.writeKmpStringsFile
 import dev.jonpoulton.catalog.gradle.test.writeSettingsFile
+import java.io.File
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-import kotlin.test.assertTrue
 
 class CatalogPluginTest {
   @get:Rule val temporaryFolder = TemporaryFolder()
@@ -29,9 +29,10 @@ class CatalogPluginTest {
   }
 
   @Test
-  fun `Generate strings in android library project`() = with(root) {
-    writeBuildFile(
-      """
+  fun `Generate strings in android library project`() =
+    with(root) {
+      writeBuildFile(
+        """
         plugins {
           kotlin("android")
           id("com.android.library")
@@ -42,27 +43,28 @@ class CatalogPluginTest {
           namespace = "a.b.c"
           compileSdk = 36
         }
-      """.trimIndent(),
-    )
+        """
+          .trimIndent()
+      )
 
-    writeAndroidStringsFile(
-      sourceSet = "main",
-      code = """
-        <resources>
-          <!-- Here's a comment -->
-          <string name="app_name">Hello World</string>
-        </resources>
-      """.trimIndent(),
-    )
+      writeAndroidStringsFile(
+        sourceSet = "main",
+        code =
+          """
+          <resources>
+            <!-- Here's a comment -->
+            <string name="app_name">Hello World</string>
+          </resources>
+          """
+            .trimIndent(),
+      )
 
-    runTask(root, ANDROID_TASK_NAME)
-      .build()
-      .assertSuccess(":$ANDROID_TASK_NAME")
+      runTask(root, ANDROID_TASK_NAME).build().assertSuccess(":$ANDROID_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/catalogMain/a/b/c/Strings.kt")
-    assertTrue(outputFile.exists())
-    outputFile.assertContains(
-      """
+      val outputFile = generatedFile("kotlin/catalogMain/a/b/c/Strings.kt")
+      assertTrue(outputFile.exists())
+      outputFile.assertContains(
+        """
         public object Strings {
           /**
            * Here's a comment
@@ -72,14 +74,16 @@ class CatalogPluginTest {
             @ReadOnlyComposable
             get() = stringResource(R.string.app_name)
         }
-      """.trimIndent(),
-    )
-  }
+        """
+          .trimIndent()
+      )
+    }
 
   @Test
-  fun `Generate string arrays in android library project`() = with(root) {
-    writeBuildFile(
-      """
+  fun `Generate string arrays in android library project`() =
+    with(root) {
+      writeBuildFile(
+        """
         plugins {
           kotlin("android")
           id("com.android.library")
@@ -90,31 +94,32 @@ class CatalogPluginTest {
           namespace = "a.b.c"
           compileSdk = 36
         }
-      """.trimIndent(),
-    )
+        """
+          .trimIndent()
+      )
 
-    writeAndroidStringsFile(
-      sourceSet = "main",
-      code = """
-        <resources>
-          <!-- Here's a comment -->
-          <string-array name="my_string_array">
-            <item>A</item>
-            <item>B</item>
-            <item>C</item>
-          </string-array>
-        </resources>
-      """.trimIndent(),
-    )
+      writeAndroidStringsFile(
+        sourceSet = "main",
+        code =
+          """
+          <resources>
+            <!-- Here's a comment -->
+            <string-array name="my_string_array">
+              <item>A</item>
+              <item>B</item>
+              <item>C</item>
+            </string-array>
+          </resources>
+          """
+            .trimIndent(),
+      )
 
-    runTask(root, ANDROID_TASK_NAME)
-      .build()
-      .assertSuccess(":$ANDROID_TASK_NAME")
+      runTask(root, ANDROID_TASK_NAME).build().assertSuccess(":$ANDROID_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/catalogMain/a/b/c/StringArrays.kt")
-    assertTrue(outputFile.exists())
-    outputFile.assertContains(
-      """
+      val outputFile = generatedFile("kotlin/catalogMain/a/b/c/StringArrays.kt")
+      assertTrue(outputFile.exists())
+      outputFile.assertContains(
+        """
         public object StringArrays {
           /**
            * Here's a comment
@@ -124,14 +129,16 @@ class CatalogPluginTest {
             @ReadOnlyComposable
             get() = stringArrayResource(R.array.my_string_array)
         }
-      """.trimIndent(),
-    )
-  }
+        """
+          .trimIndent()
+      )
+    }
 
   @Test
-  fun `Generate strings in KMP project`() = with(root) {
-    writeBuildFile(
-      """
+  fun `Generate strings in KMP project`() =
+    with(root) {
+      writeBuildFile(
+        """
         plugins {
           kotlin("multiplatform")
           kotlin("plugin.compose")
@@ -154,29 +161,30 @@ class CatalogPluginTest {
           jvm()
           androidTarget()
         }
-      """.trimIndent(),
-    )
+        """
+          .trimIndent()
+      )
 
-    writeKmpStringsFile(
-      code = """
-        <resources>
-          <!-- Here's a comment -->
-          <string name="app_name">Hello World</string>
-        </resources>
-      """.trimIndent(),
-    )
+      writeKmpStringsFile(
+        code =
+          """
+          <resources>
+            <!-- Here's a comment -->
+            <string name="app_name">Hello World</string>
+          </resources>
+          """
+            .trimIndent()
+      )
 
-    runTask(root, KMP_TASK_NAME)
-      .build()
-      .assertSuccess(":$KMP_TASK_NAME")
+      runTask(root, KMP_TASK_NAME).build().assertSuccess(":$KMP_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/catalogCommonMain/a/b/c/Strings.kt")
-    assertTrue(outputFile.exists())
-    outputFile.assertContains("package a.b.c")
-    outputFile.assertContains("import x.y.z.SomeOtherName")
-    outputFile.assertContains("import org.jetbrains.compose.resources.stringResource")
-    outputFile.assertContains(
-      """
+      val outputFile = generatedFile("kotlin/catalogCommonMain/a/b/c/Strings.kt")
+      assertTrue(outputFile.exists())
+      outputFile.assertContains("package a.b.c")
+      outputFile.assertContains("import x.y.z.SomeOtherName")
+      outputFile.assertContains("import org.jetbrains.compose.resources.stringResource")
+      outputFile.assertContains(
+        """
         public object Strings {
           /**
            * Here's a comment
@@ -185,14 +193,16 @@ class CatalogPluginTest {
             @Composable
             get() = stringResource(SomeOtherName.string.app_name)
         }
-      """.trimIndent(),
-    )
-  }
+        """
+          .trimIndent()
+      )
+    }
 
   @Test
-  fun `Generate strings in KMP project using new KMP AGP`() = with(root) {
-    writeBuildFile(
-      """
+  fun `Generate strings in KMP project using new KMP AGP`() =
+    with(root) {
+      writeBuildFile(
+        """
         plugins {
           kotlin("multiplatform")
           kotlin("plugin.compose")
@@ -214,29 +224,30 @@ class CatalogPluginTest {
             compileSdk = 36
           }
         }
-      """.trimIndent(),
-    )
+        """
+          .trimIndent()
+      )
 
-    writeKmpStringsFile(
-      code = """
-        <resources>
-          <!-- Here's a comment -->
-          <string name="app_name">Hello World</string>
-        </resources>
-      """.trimIndent(),
-    )
+      writeKmpStringsFile(
+        code =
+          """
+          <resources>
+            <!-- Here's a comment -->
+            <string name="app_name">Hello World</string>
+          </resources>
+          """
+            .trimIndent()
+      )
 
-    runTask(root, KMP_TASK_NAME)
-      .build()
-      .assertSuccess(":$KMP_TASK_NAME")
+      runTask(root, KMP_TASK_NAME).build().assertSuccess(":$KMP_TASK_NAME")
 
-    val outputFile = generatedFile("kotlin/catalogCommonMain/a/b/c/Strings.kt")
-    assertTrue(outputFile.exists())
-    outputFile.assertContains("package a.b.c")
-    outputFile.assertContains("import x.y.z.SomeOtherName")
-    outputFile.assertContains("import org.jetbrains.compose.resources.stringResource")
-    outputFile.assertContains(
-      """
+      val outputFile = generatedFile("kotlin/catalogCommonMain/a/b/c/Strings.kt")
+      assertTrue(outputFile.exists())
+      outputFile.assertContains("package a.b.c")
+      outputFile.assertContains("import x.y.z.SomeOtherName")
+      outputFile.assertContains("import org.jetbrains.compose.resources.stringResource")
+      outputFile.assertContains(
+        """
         public object Strings {
           /**
            * Here's a comment
@@ -245,7 +256,8 @@ class CatalogPluginTest {
             @Composable
             get() = stringResource(SomeOtherName.string.app_name)
         }
-      """.trimIndent(),
-    )
-  }
+        """
+          .trimIndent()
+      )
+    }
 }
