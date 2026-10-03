@@ -43,7 +43,7 @@ val detektTasks = tasks.withType(Detekt::class)
 
 detektTasks.configureEach { reports.html.required = true }
 
-val detektCheck by tasks.registering { dependsOn(detektTasks) }
+val detektCheck = tasks.register("detektCheck") { dependsOn(detektTasks) }
 
 tasks.check { dependsOn(detektCheck) }
 
@@ -53,7 +53,7 @@ gradlePlugin.plugins.create("catalog") {
 }
 
 fun Provider<PluginDependency>.artifact() =
-  map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}") }
+  map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}" }
 
 dependencies {
   fun compileOnly(plugin: Provider<PluginDependency>) = compileOnly(plugin.artifact())
@@ -62,7 +62,6 @@ dependencies {
   compileOnly(libs.plugins.agp.kmp)
   compileOnly(libs.plugins.agp.lib)
   compileOnly(libs.plugins.jetbrainsCompose)
-  compileOnly(libs.plugins.kotlinAndroid)
   compileOnly(libs.plugins.kotlinJvm)
   compileOnly(libs.plugins.kotlinMultiplatform)
 
@@ -80,7 +79,6 @@ dependencies {
   testPluginClasspath(libs.plugins.agp.kmp)
   testPluginClasspath(libs.plugins.agp.lib)
   testPluginClasspath(libs.plugins.jetbrainsCompose)
-  testPluginClasspath(libs.plugins.kotlinAndroid)
   testPluginClasspath(libs.plugins.kotlinJvm)
   testPluginClasspath(libs.plugins.kotlinCompose)
 }

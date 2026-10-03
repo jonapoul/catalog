@@ -65,7 +65,7 @@ public abstract class GenerateAndroidResourcesTask : GenerateResourcesTask() {
       target: Project,
       taskName: String,
       catalogExtension: CatalogExtension,
-      commonExtension: CommonExtension<*, *, *, *, *, *>,
+      commonExtension: CommonExtension,
       sourceSetDirs: Set<File>,
       sourceSetName: String,
     ): TaskProvider<GenerateAndroidResourcesTask> =
