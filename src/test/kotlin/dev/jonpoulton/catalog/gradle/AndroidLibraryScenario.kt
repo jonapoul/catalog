@@ -28,7 +28,6 @@ class AndroidLibraryScenario : CatalogScenarioTest() {
     buildGradleKts(
       """
       plugins {
-        kotlin("android")
         id("com.android.library")
         id("dev.jonpoulton.catalog")
       }

@@ -24,7 +24,7 @@ public class CatalogPlugin : Plugin<Project> {
       val catalogExtension = extensions.create("catalog", CatalogExtension::class.java)
 
       with(pluginManager) {
-        withPlugin("org.jetbrains.kotlin.android") {
+        withPlugin("com.android.base") {
           applyAndroid(catalogExtension)
         }
 
@@ -89,7 +89,8 @@ public class CatalogPlugin : Plugin<Project> {
   private fun Project.applyAndroid(catalogExtension: CatalogExtension) {
     val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
     androidComponents.finalizeDsl { ext ->
-      @Suppress("UNCHECKED_CAST") val commonExtension = ext as CommonExtension<*, *, *, *, *, *>
+      if (pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform")) return@finalizeDsl
+      val commonExtension = ext as CommonExtension
       val mainTaskProvider =
         getTaskProviderForSourceSet(
           catalogExtension = catalogExtension,
@@ -142,7 +143,7 @@ public class CatalogPlugin : Plugin<Project> {
 
   private fun Project.getTaskProviderForSourceSet(
     catalogExtension: CatalogExtension,
-    commonExtension: CommonExtension<*, *, *, *, *, *>,
+    commonExtension: CommonExtension,
     sourceSetDirs: Set<File>,
     sourceSetName: String,
   ): TaskProvider<GenerateAndroidResourcesTask> {
@@ -163,9 +164,7 @@ public class CatalogPlugin : Plugin<Project> {
    * Gets all the /res folders for a given source set name. This should only get one item, unless
    * another source set has been added by another plugin or Gradle script.
    */
-  private fun CommonExtension<*, *, *, *, *, *>.getQualifiedSourceSetsByName(
-    sourceSetName: String
-  ): Set<File> =
+  private fun CommonExtension.getQualifiedSourceSetsByName(sourceSetName: String): Set<File> =
     sourceSets.getByName(sourceSetName).res.let { res ->
       (res as DefaultAndroidSourceDirectorySet).srcDirs
     }
