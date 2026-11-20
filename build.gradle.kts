@@ -116,3 +116,7 @@ tasks.test {
   systemProperty("test.version.gradle", GradleVersion.current().version)
   androidHome()?.let { systemProperty("test.androidHome", it) }
 }
+
+tasks.dependencyUpdates {
+  rejectPreReleases = true
+}
