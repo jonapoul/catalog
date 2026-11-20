@@ -42,7 +42,7 @@ class PluralCatalogWriterTest {
           composableResourceAccessorPackage = "androidx.compose.ui.res",
           pluralAccessorIsExperimental = true,
           useReadOnlyComposable = true,
-        )
+        ),
     )
 
   private val resources =
@@ -155,7 +155,7 @@ class PluralCatalogWriterTest {
           public fun plural4(quantity: Int, arg1: Char): String = pluralStringResource(R.plurals.plural_4, quantity, arg1)
         }
 
-      """
+      """,
       )
   }
 
@@ -221,7 +221,7 @@ class PluralCatalogWriterTest {
           internal fun plural4(quantity: Int, arg1: Char): String = pluralStringResource(R.plurals.plural_4, quantity, arg1)
         }
 
-      """
+      """,
       )
   }
 
@@ -288,7 +288,7 @@ class PluralCatalogWriterTest {
           public fun plural4(quantity: Int, arg1: Char): String = pluralStringResource(R.plurals.plural_4, quantity, arg1)
         }
 
-      """
+      """,
       )
   }
 
@@ -354,7 +354,7 @@ class PluralCatalogWriterTest {
           public fun plural4(quantity: Int, char1: Char): String = pluralStringResource(R.plurals.plural_4, quantity, char1)
         }
 
-      """
+      """,
       )
   }
 }

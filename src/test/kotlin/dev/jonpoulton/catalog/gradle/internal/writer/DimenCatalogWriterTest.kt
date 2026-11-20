@@ -45,7 +45,7 @@ class DimenCatalogWriterTest {
           composableResourceAccessorPackage = "androidx.compose.ui.res",
           pluralAccessorIsExperimental = true,
           useReadOnlyComposable = true,
-        )
+        ),
     )
 
   @Before
@@ -86,7 +86,7 @@ class DimenCatalogWriterTest {
             get() = dimensionResource(R.dimen.dimen_2)
         }
 
-      """
+      """,
       )
   }
 
@@ -122,7 +122,7 @@ class DimenCatalogWriterTest {
             get() = dimensionResource(R.dimen.dimen_2)
         }
 
-      """
+      """,
       )
   }
 
@@ -159,7 +159,7 @@ class DimenCatalogWriterTest {
             get() = dimensionResource(R.dimen.dimen_2)
         }
 
-      """
+      """,
       )
   }
 }

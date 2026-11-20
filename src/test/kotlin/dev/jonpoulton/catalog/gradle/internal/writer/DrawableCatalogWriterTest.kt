@@ -53,7 +53,7 @@ class DrawableCatalogWriterTest {
           composableResourceAccessorPackage = "androidx.compose.ui.res",
           pluralAccessorIsExperimental = true,
           useReadOnlyComposable = true,
-        )
+        ),
     )
 
   @Before
@@ -94,7 +94,7 @@ class DrawableCatalogWriterTest {
             get() = AnimatedImageVector.animatedVectorResource(R.drawable.drawable_2)
         }
 
-      """
+      """,
       )
   }
 
@@ -130,7 +130,7 @@ class DrawableCatalogWriterTest {
             get() = AnimatedImageVector.animatedVectorResource(R.drawable.drawable_2)
         }
 
-      """
+      """,
       )
   }
 
@@ -166,7 +166,7 @@ class DrawableCatalogWriterTest {
             get() = AnimatedImageVector.animatedVectorResource(R.drawable.drawable_2)
         }
 
-      """
+      """,
       )
   }
 }

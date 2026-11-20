@@ -45,7 +45,7 @@ internal fun getFormattedParameters(
 }
 
 internal fun FunSpec.Builder.addFormattedParameters(
-  parameters: List<FormattedParameter>
+  parameters: List<FormattedParameter>,
 ): FunSpec.Builder {
   parameters.forEach { parameter ->
     addParameter(parameter.name, parameter.type)

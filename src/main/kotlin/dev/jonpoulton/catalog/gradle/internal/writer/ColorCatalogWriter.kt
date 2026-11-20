@@ -18,7 +18,7 @@ internal class ColorCatalogWriter(
   private val composeColorClass = ClassName("androidx.compose.ui.graphics", "Color")
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.Color
+    resource: ResourceEntry.XmlItem.Color,
   ): TypeSpec.Builder =
     addProperty(
       PropertySpec.builder(config.nameTransform(resource.name), composeColorClass)
@@ -26,7 +26,7 @@ internal class ColorCatalogWriter(
         .addInternalIfConfigured()
         .mutable(false)
         .getter(buildGetter(resource))
-        .build()
+        .build(),
     )
 
   private fun buildGetter(resource: ResourceEntry.XmlItem.Color): FunSpec {

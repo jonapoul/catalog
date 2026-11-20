@@ -45,7 +45,7 @@ class ColorCatalogWriterTest {
           composableResourceAccessorPackage = "androidx.compose.ui.res",
           pluralAccessorIsExperimental = true,
           useReadOnlyComposable = true,
-        )
+        ),
     )
 
   @Before
@@ -86,7 +86,7 @@ class ColorCatalogWriterTest {
             get() = colorResource(R.color.color_2)
         }
 
-      """
+      """,
       )
   }
 
@@ -122,7 +122,7 @@ class ColorCatalogWriterTest {
             get() = colorResource(R.color.color_2)
         }
 
-      """
+      """,
       )
   }
 
@@ -159,7 +159,7 @@ class ColorCatalogWriterTest {
             get() = colorResource(R.color.color_2)
         }
 
-      """
+      """,
       )
   }
 }

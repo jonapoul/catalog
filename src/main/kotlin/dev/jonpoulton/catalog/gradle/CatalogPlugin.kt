@@ -66,7 +66,7 @@ public class CatalogPlugin : Plugin<Project> {
         .getByType(ResourcesExtension::class.java)
 
     extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets.getByName(
-      "commonMain"
+      "commonMain",
     ) { kotlinSourceSet ->
       val name = kotlinSourceSet.name
       val taskName = taskName(qualifier = name)

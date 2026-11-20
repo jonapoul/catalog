@@ -37,7 +37,7 @@ class AndroidLibraryScenario : CatalogScenarioTest() {
         compileSdk = $COMPILE_SDK
       }
       """
-        .trimIndent()
+        .trimIndent(),
     )
 
     androidStringsXml(
@@ -54,7 +54,7 @@ class AndroidLibraryScenario : CatalogScenarioTest() {
         </string-array>
       </resources>
       """
-        .trimIndent()
+        .trimIndent(),
     )
   }
 
@@ -76,7 +76,7 @@ class AndroidLibraryScenario : CatalogScenarioTest() {
             get() = stringResource(R.string.app_name)
         }
         """
-          .trimIndent()
+          .trimIndent(),
       )
   }
 
@@ -98,7 +98,7 @@ class AndroidLibraryScenario : CatalogScenarioTest() {
             get() = stringArrayResource(R.array.my_string_array)
         }
         """
-          .trimIndent()
+          .trimIndent(),
       )
   }
 }

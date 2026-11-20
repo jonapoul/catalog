@@ -17,7 +17,7 @@ internal class IntegerCatalogWriter(
   private val integerResourceMember by lazy { resourceAccessor("integerResource") }
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.Integer
+    resource: ResourceEntry.XmlItem.Integer,
   ): TypeSpec.Builder {
     val statementFormat = "return %M(%T.integer.%L)"
     val statementArgs = arrayOf(integerResourceMember, rClass, resource.name)
@@ -35,7 +35,7 @@ internal class IntegerCatalogWriter(
         .addInternalIfConfigured()
         .mutable(false)
         .getter(getter)
-        .build()
+        .build(),
     )
   }
 }

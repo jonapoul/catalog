@@ -49,7 +49,7 @@ class StringArrayCatalogWriterTest {
           composableResourceAccessorPackage = "androidx.compose.ui.res",
           pluralAccessorIsExperimental = true,
           useReadOnlyComposable = true,
-        )
+        ),
     )
 
   @Before
@@ -91,7 +91,7 @@ class StringArrayCatalogWriterTest {
             get() = stringArrayResource(R.array.string_array_2)
         }
 
-      """
+      """,
       )
   }
 
@@ -128,7 +128,7 @@ class StringArrayCatalogWriterTest {
             get() = stringArrayResource(R.array.string_array_2)
         }
 
-      """
+      """,
       )
   }
 
@@ -166,7 +166,7 @@ class StringArrayCatalogWriterTest {
             get() = stringArrayResource(R.array.string_array_2)
         }
 
-      """
+      """,
       )
   }
 }

@@ -49,7 +49,7 @@ class KmpAndroidLibraryScenario : CatalogScenarioTest() {
         }
       }
       """
-        .trimIndent()
+        .trimIndent(),
     )
 
     kmpStringsXml(
@@ -59,7 +59,7 @@ class KmpAndroidLibraryScenario : CatalogScenarioTest() {
         <string name="app_name">Hello World</string>
       </resources>
       """
-        .trimIndent()
+        .trimIndent(),
     )
   }
 
@@ -83,7 +83,7 @@ class KmpAndroidLibraryScenario : CatalogScenarioTest() {
             get() = stringResource(SomeOtherName.string.app_name)
         }
         """
-          .trimIndent()
+          .trimIndent(),
       )
   }
 }
