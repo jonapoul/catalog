@@ -34,7 +34,7 @@ class InvalidResourcesScenario : CatalogScenarioTest() {
         compileSdk = $COMPILE_SDK
       }
       """
-        .trimIndent()
+        .trimIndent(),
     )
 
     androidStringsXml(
@@ -49,7 +49,7 @@ class InvalidResourcesScenario : CatalogScenarioTest() {
         </plurals>
       </resources>
       """
-        .trimIndent()
+        .trimIndent(),
     )
   }
 

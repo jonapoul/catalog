@@ -22,7 +22,7 @@ internal class ResourceReducer {
   }
 
   private fun ResourceEntry.validateArgumentTypes(
-    typedArgs: MutableMap<Int, Pair<StringArg, File>>
+    typedArgs: MutableMap<Int, Pair<StringArg, File>>,
   ) {
     val args =
       when (this) {
@@ -48,7 +48,7 @@ internal class ResourceReducer {
   }
 
   private fun ResourceEntry.verifyIfNoArgHasBeenSkipped(
-    typedArgs: MutableMap<Int, Pair<StringArg, File>>
+    typedArgs: MutableMap<Int, Pair<StringArg, File>>,
   ) {
     val keys = typedArgs.keys
     if (keys.isNotEmpty()) {

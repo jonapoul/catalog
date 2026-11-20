@@ -71,6 +71,7 @@ public abstract class GenerateAndroidResourcesTask : GenerateResourcesTask() {
     ): TaskProvider<GenerateAndroidResourcesTask> =
       with(target) {
         tasks.register(taskName, GenerateAndroidResourcesTask::class.java) { task ->
+          @Suppress("PreferNamedOverGet")
           val packageName =
             catalogExtension.packageName.orNull
               ?: commonExtension.namespace
@@ -84,7 +85,7 @@ public abstract class GenerateAndroidResourcesTask : GenerateResourcesTask() {
           task.parameterNaming.set(catalogExtension.parameterNaming)
           task.sourceSetDirs.set(sourceSetDirs)
           task.outputDirectory.set(
-            layout.buildDirectory.dir("generated/kotlin/catalog${sourceSetName.capitalize()}")
+            layout.buildDirectory.dir("generated/kotlin/catalog${sourceSetName.capitalize()}"),
           )
           for (dir in sourceSetDirs) task.source(dir)
         }

@@ -84,6 +84,8 @@ dependencies {
   testPluginClasspath(libs.plugins.jetbrainsCompose)
   testPluginClasspath(libs.plugins.kotlinJvm)
   testPluginClasspath(libs.plugins.kotlinCompose)
+
+  detektPlugins(libs.detektGradle)
 }
 
 fun androidHome(): String? {
@@ -115,4 +117,8 @@ tasks.test {
   useJUnitPlatform()
   systemProperty("test.version.gradle", GradleVersion.current().version)
   androidHome()?.let { systemProperty("test.androidHome", it) }
+}
+
+tasks.dependencyUpdates {
+  rejectPreReleases = true
 }

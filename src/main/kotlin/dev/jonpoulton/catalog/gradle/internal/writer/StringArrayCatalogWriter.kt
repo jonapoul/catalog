@@ -18,7 +18,7 @@ internal class StringArrayCatalogWriter(
   private val stringArrayResourceMember by lazy { resourceAccessor("stringArrayResource") }
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.StringArray
+    resource: ResourceEntry.XmlItem.StringArray,
   ): TypeSpec.Builder {
     val statementArgs = arrayOf(stringArrayResourceMember, rClass, resource.name)
     val statementFormat = "return %M(%T.array.%L)"
@@ -38,7 +38,7 @@ internal class StringArrayCatalogWriter(
         .addInternalIfConfigured()
         .mutable(false)
         .getter(getter)
-        .build()
+        .build(),
     )
   }
 }

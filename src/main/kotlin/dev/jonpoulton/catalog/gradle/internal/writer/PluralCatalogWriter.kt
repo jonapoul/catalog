@@ -22,7 +22,7 @@ internal class PluralCatalogWriter(
   private val optInClass = ClassName("kotlin", "OptIn")
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.WithArgs.Plural
+    resource: ResourceEntry.XmlItem.WithArgs.Plural,
   ): TypeSpec.Builder {
     val sortedArgs = resource.args.sortedBy { it.position }
     val formattedParameters = getFormattedParameters(sortedArgs, config.parameterNaming)

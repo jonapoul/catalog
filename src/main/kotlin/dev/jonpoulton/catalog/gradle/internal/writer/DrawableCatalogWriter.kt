@@ -67,7 +67,7 @@ internal class DrawableCatalogWriter(
         .addInternalIfConfigured()
         .apply { if (resource.type == ANIMATED_VECTOR) addAnnotation(optInAnnotation) }
         .getter(getter)
-        .build()
+        .build(),
     )
   }
 }

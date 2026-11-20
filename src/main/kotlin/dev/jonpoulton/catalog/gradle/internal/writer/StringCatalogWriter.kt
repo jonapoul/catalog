@@ -17,7 +17,7 @@ internal class StringCatalogWriter(
   private val stringResourceMember by lazy { resourceAccessor("stringResource") }
 
   override fun TypeSpec.Builder.addResource(
-    resource: ResourceEntry.XmlItem.WithArgs.String
+    resource: ResourceEntry.XmlItem.WithArgs.String,
   ): TypeSpec.Builder {
     val sortedArgs = resource.args.sortedBy { it.position }
     val formattedParameters = getFormattedParameters(sortedArgs, config.parameterNaming)

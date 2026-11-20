@@ -51,11 +51,15 @@ public class CatalogPlugin : Plugin<Project> {
           task.dependsOn(catalogTasks)
         }
 
-      afterEvaluate {
-        if (catalogExtension.generateAtSync.get() && isGradleSync) {
-          tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(wrapper)
+      tasks
+        .named { it == "prepareKotlinIdeaImport" }
+        .configureEach { task ->
+          task.dependsOn(
+            catalogExtension.generateAtSync.map { generate ->
+              if (generate && isGradleSync) listOf(wrapper) else emptyList()
+            },
+          )
         }
-      }
     }
 
   private fun Project.applyKmp(catalogExtension: CatalogExtension) {
@@ -65,25 +69,23 @@ public class CatalogPlugin : Plugin<Project> {
         .extensions
         .getByType(ResourcesExtension::class.java)
 
-    extensions.getByType(KotlinMultiplatformExtension::class.java).sourceSets.getByName(
-      "commonMain"
-    ) { kotlinSourceSet ->
-      val name = kotlinSourceSet.name
-      val taskName = taskName(qualifier = name)
+    val name = "commonMain"
+    val task =
+      GenerateKmpResourcesTask.register(
+        target = this,
+        taskName = taskName(qualifier = name),
+        catalogExtension = catalogExtension,
+        resourcesExtension = resourcesExtension,
+        sourceSetDirs = setOf(file("src/$name/composeResources")),
+        sourceSetName = name,
+        androidPackageName = androidPackageNameOrNull(),
+      )
 
-      val task =
-        GenerateKmpResourcesTask.register(
-          target = this,
-          taskName = taskName,
-          catalogExtension = catalogExtension,
-          resourcesExtension = resourcesExtension,
-          sourceSetDirs = setOf(file("src/$name/composeResources")),
-          sourceSetName = name,
-          androidPackageName = androidPackageNameOrNull(),
-        )
-
-      kotlinSourceSet.kotlin.srcDir(task.flatMap { it.outputDirectory })
-    }
+    extensions
+      .getByType(KotlinMultiplatformExtension::class.java)
+      .sourceSets
+      .named(name)
+      .configure { it.kotlin.srcDir(task.flatMap { t -> t.outputDirectory }) }
   }
 
   private fun Project.applyAndroid(catalogExtension: CatalogExtension) {
@@ -164,6 +166,7 @@ public class CatalogPlugin : Plugin<Project> {
    * Gets all the /res folders for a given source set name. This should only get one item, unless
    * another source set has been added by another plugin or Gradle script.
    */
+  @Suppress("PreferNamedOverGet")
   private fun CommonExtension.getQualifiedSourceSetsByName(sourceSetName: String): Set<File> =
     sourceSets.getByName(sourceSetName).res.let { res ->
       (res as DefaultAndroidSourceDirectorySet).srcDirs

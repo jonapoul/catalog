@@ -42,7 +42,7 @@ class StringCatalogWriterTest {
           composableResourceAccessorPackage = "androidx.compose.ui.res",
           pluralAccessorIsExperimental = true,
           useReadOnlyComposable = true,
-        )
+        ),
     )
 
   private val resources =
@@ -148,7 +148,7 @@ class StringCatalogWriterTest {
           public fun string4(arg1: Char): String = stringResource(R.string.string_4, arg1)
         }
 
-      """
+      """,
       )
   }
 
@@ -207,7 +207,7 @@ class StringCatalogWriterTest {
           internal fun string4(arg1: Char): String = stringResource(R.string.string_4, arg1)
         }
 
-      """
+      """,
       )
   }
 
@@ -267,7 +267,7 @@ class StringCatalogWriterTest {
           public fun string4(arg1: Char): String = stringResource(R.string.string_4, arg1)
         }
 
-      """
+      """,
       )
   }
 
@@ -326,7 +326,7 @@ class StringCatalogWriterTest {
           public fun string4(char1: Char): String = stringResource(R.string.string_4, char1)
         }
 
-      """
+      """,
       )
   }
 
@@ -337,7 +337,7 @@ class StringCatalogWriterTest {
           NameTransform.chained(
             NameTransform.removePrefix(prefix = "str"),
             NameTransform.CamelCase,
-          )
+          ),
       )
       .write(resources, codegenDestination)
     assertThat(codegenFile.readBytes().toString(Charset.defaultCharset()))
@@ -392,7 +392,7 @@ class StringCatalogWriterTest {
           public fun ing4(arg1: Char): String = stringResource(R.string.string_4, arg1)
         }
 
-      """
+      """,
       )
   }
 }
