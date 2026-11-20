@@ -8,7 +8,6 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
@@ -36,7 +35,7 @@ internal class DrawableCatalogWriter(
       .addMember("%T::class", experimentalAnimationGraphicsApiClass)
       .build()
 
-  override fun TypeSpec.Builder.addResource(resource: ResourceEntry.Drawable): TypeSpec.Builder {
+  override fun buildMember(resource: ResourceEntry.Drawable, receiver: ClassName?): Member {
     val statementArgs: Array<Any>
     val statementFormat: String
     val returnType: TypeName
@@ -61,8 +60,9 @@ internal class DrawableCatalogWriter(
         .addStatement(statementFormat, *statementArgs)
         .build()
 
-    return addProperty(
+    return Member.Property(
       PropertySpec.builder(config.nameTransform(resource.name), returnType)
+        .receiverIfSet(receiver)
         .mutable(false)
         .addInternalIfConfigured()
         .apply { if (resource.type == ANIMATED_VECTOR) addAnnotation(optInAnnotation) }

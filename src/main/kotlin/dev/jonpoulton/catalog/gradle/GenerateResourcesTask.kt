@@ -25,5 +25,6 @@ public abstract class GenerateResourcesTask : SourceTask() {
     val composableResourceAccessorPackage: String,
     val pluralAccessorIsExperimental: Boolean,
     val useReadOnlyComposable: Boolean,
+    val extensionsPerFile: Int? = null,
   )
 }

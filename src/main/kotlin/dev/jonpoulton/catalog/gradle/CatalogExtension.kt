@@ -34,4 +34,14 @@ public open class CatalogExtension @Inject constructor(objects: ObjectFactory) {
   /** Defines the naming convention for string/plural resource parameters */
   public val parameterNaming: Property<CatalogParameterNaming> =
     objects.property(CatalogParameterNaming::class.java).convention(CatalogParameterNaming.ByType)
+
+  /**
+   * When true, accessors are generated as extensions on empty objects like `Strings`, split across
+   * multiple files. Defaults to false, which generates all accessors inside the object.
+   */
+  public val generateExtensions: Property<Boolean> =
+    objects.property(Boolean::class.java).convention(false)
+
+  /** Max number of extensions per generated file. Only used with [generateExtensions]. */
+  public val maxExtensionsPerFile: Property<Int> = objects.property(Int::class.java).convention(500)
 }

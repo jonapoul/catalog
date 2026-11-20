@@ -32,6 +32,8 @@ public abstract class GenerateKmpResourcesTask : GenerateResourcesTask() {
   public abstract val typePrefix: Property<String>
   @get:Input public abstract val generateInternal: Property<Boolean>
   @get:Input public abstract val parameterNaming: Property<CatalogParameterNaming>
+  @get:Input public abstract val generateExtensions: Property<Boolean>
+  @get:Input public abstract val maxExtensionsPerFile: Property<Int>
   @get:Internal public abstract val nameTransform: Property<NameTransform>
   @get:Internal public abstract val sourceSetDirs: SetProperty<File>
   @get:OutputDirectory public abstract override val outputDirectory: DirectoryProperty
@@ -57,6 +59,7 @@ public abstract class GenerateKmpResourcesTask : GenerateResourcesTask() {
             composableResourceAccessorPackage = "org.jetbrains.compose.resources",
             pluralAccessorIsExperimental = false,
             useReadOnlyComposable = false,
+            extensionsPerFile = maxExtensionsPerFile.get().takeIf { generateExtensions.get() },
           ),
       )
       .start(sourceSetDirs.get(), outputDirectory)
@@ -81,6 +84,8 @@ public abstract class GenerateKmpResourcesTask : GenerateResourcesTask() {
           task.typePrefix.set(catalogExtension.typePrefix.orNull.orEmpty())
           task.nameTransform.set(catalogExtension.nameTransform)
           task.parameterNaming.set(catalogExtension.parameterNaming)
+          task.generateExtensions.set(catalogExtension.generateExtensions)
+          task.maxExtensionsPerFile.set(catalogExtension.maxExtensionsPerFile)
           task.sourceSetDirs.set(sourceSetDirs)
           task.outputDirectory.set(
             layout.buildDirectory.dir("generated/kotlin/catalog${sourceSetName.capitalize()}"),
