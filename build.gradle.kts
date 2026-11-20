@@ -84,6 +84,8 @@ dependencies {
   testPluginClasspath(libs.plugins.jetbrainsCompose)
   testPluginClasspath(libs.plugins.kotlinJvm)
   testPluginClasspath(libs.plugins.kotlinCompose)
+
+  detektPlugins(libs.detektGradle)
 }
 
 fun androidHome(): String? {

@@ -5,6 +5,7 @@ junit6 = "6.1.3"
 kotlin = "2.4.20"
 
 [libraries]
+detektGradle = { module = "dev.jonpoulton.blueprint:detekt-rules", version.ref = "blueprint" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version = "2.4.0" }
 ktfmt = { module = "org.jetbrains.kotlinx:ktfmt", version = "0.65" } # only used in ktfmt.sh
 test-assertk = { module = "com.willowtreeapps.assertk:assertk", version = "0.28.1" }

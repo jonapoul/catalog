@@ -71,6 +71,7 @@ public abstract class GenerateAndroidResourcesTask : GenerateResourcesTask() {
     ): TaskProvider<GenerateAndroidResourcesTask> =
       with(target) {
         tasks.register(taskName, GenerateAndroidResourcesTask::class.java) { task ->
+          @Suppress("PreferNamedOverGet")
           val packageName =
             catalogExtension.packageName.orNull
               ?: commonExtension.namespace
