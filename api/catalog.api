@@ -1,7 +1,9 @@
 public class dev/jonpoulton/catalog/gradle/CatalogExtension {
 	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
 	public final fun getGenerateAtSync ()Lorg/gradle/api/provider/Property;
+	public final fun getGenerateExtensions ()Lorg/gradle/api/provider/Property;
 	public final fun getGenerateInternal ()Lorg/gradle/api/provider/Property;
+	public final fun getMaxExtensionsPerFile ()Lorg/gradle/api/provider/Property;
 	public final fun getNameTransform ()Lorg/gradle/api/provider/Property;
 	public final fun getPackageName ()Lorg/gradle/api/provider/Property;
 	public final fun getParameterNaming ()Lorg/gradle/api/provider/Property;
@@ -25,7 +27,9 @@ public final class dev/jonpoulton/catalog/gradle/CatalogPlugin : org/gradle/api/
 public abstract class dev/jonpoulton/catalog/gradle/GenerateAndroidResourcesTask : dev/jonpoulton/catalog/gradle/GenerateResourcesTask {
 	public fun <init> ()V
 	public final fun action ()V
+	public abstract fun getGenerateExtensions ()Lorg/gradle/api/provider/Property;
 	public abstract fun getGenerateInternal ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMaxExtensionsPerFile ()Lorg/gradle/api/provider/Property;
 	public abstract fun getNameTransform ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getPackageName ()Lorg/gradle/api/provider/Property;
@@ -37,7 +41,9 @@ public abstract class dev/jonpoulton/catalog/gradle/GenerateAndroidResourcesTask
 public abstract class dev/jonpoulton/catalog/gradle/GenerateKmpResourcesTask : dev/jonpoulton/catalog/gradle/GenerateResourcesTask {
 	public fun <init> ()V
 	public final fun action ()V
+	public abstract fun getGenerateExtensions ()Lorg/gradle/api/provider/Property;
 	public abstract fun getGenerateInternal ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMaxExtensionsPerFile ()Lorg/gradle/api/provider/Property;
 	public abstract fun getNameTransform ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public abstract fun getPackageName ()Lorg/gradle/api/provider/Property;

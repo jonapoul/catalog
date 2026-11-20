@@ -120,3 +120,13 @@ catalog {
   generateComposeExtensions = false
 }
 ```
+
+If you have lots of resources, you can generate them as extensions on empty objects like `Strings`
+instead, split across several files:
+
+```groovy
+catalog {
+  generateExtensions = true
+  maxExtensionsPerFile = 500 // default
+}
+```

@@ -2,9 +2,9 @@
 
 package dev.jonpoulton.catalog.gradle.internal.writer
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
@@ -16,9 +16,10 @@ internal class IntegerCatalogWriter(
 ) : CatalogWriter<ResourceEntry.XmlItem.Integer>() {
   private val integerResourceMember by lazy { resourceAccessor("integerResource") }
 
-  override fun TypeSpec.Builder.addResource(
+  override fun buildMember(
     resource: ResourceEntry.XmlItem.Integer,
-  ): TypeSpec.Builder {
+    receiver: ClassName?,
+  ): Member {
     val statementFormat = "return %M(%T.integer.%L)"
     val statementArgs = arrayOf(integerResourceMember, rClass, resource.name)
 
@@ -29,8 +30,9 @@ internal class IntegerCatalogWriter(
         .addStatement(statementFormat, *statementArgs)
         .build()
 
-    return addProperty(
+    return Member.Property(
       PropertySpec.builder(config.nameTransform(resource.name), Int::class.asClassName())
+        .receiverIfSet(receiver)
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)

@@ -5,7 +5,6 @@ package dev.jonpoulton.catalog.gradle.internal.writer
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
@@ -17,9 +16,10 @@ internal class DimenCatalogWriter(
   private val dimensionResourceMember by lazy { resourceAccessor("dimensionResource") }
   private val composeDpClass = ClassName(packageName = "androidx.compose.ui.unit", "Dp")
 
-  override fun TypeSpec.Builder.addResource(
+  override fun buildMember(
     resource: ResourceEntry.XmlItem.Dimen,
-  ): TypeSpec.Builder {
+    receiver: ClassName?,
+  ): Member {
     val statementFormat = "return %M(%T.dimen.%L)"
     val statementArgs = arrayOf(dimensionResourceMember, rClass, resource.name)
 
@@ -30,8 +30,9 @@ internal class DimenCatalogWriter(
         .addStatement(statementFormat, *statementArgs)
         .build()
 
-    return addProperty(
+    return Member.Property(
       PropertySpec.builder(config.nameTransform(resource.name), composeDpClass)
+        .receiverIfSet(receiver)
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)

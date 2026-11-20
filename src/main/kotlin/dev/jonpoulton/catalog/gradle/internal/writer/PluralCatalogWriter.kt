@@ -5,7 +5,6 @@ package dev.jonpoulton.catalog.gradle.internal.writer
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.TypeSpec
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
 import dev.jonpoulton.catalog.gradle.internal.ResourceType
@@ -21,9 +20,10 @@ internal class PluralCatalogWriter(
 
   private val optInClass = ClassName("kotlin", "OptIn")
 
-  override fun TypeSpec.Builder.addResource(
+  override fun buildMember(
     resource: ResourceEntry.XmlItem.WithArgs.Plural,
-  ): TypeSpec.Builder {
+    receiver: ClassName?,
+  ): Member {
     val sortedArgs = resource.args.sortedBy { it.position }
     val formattedParameters = getFormattedParameters(sortedArgs, config.parameterNaming)
     val methodName = "%M"
@@ -44,6 +44,7 @@ internal class PluralCatalogWriter(
 
     val function =
       FunSpec.builder(config.nameTransform(resource.name))
+        .receiverIfSet(receiver)
         .addKdoc(resource)
         .apply { if (config.pluralAccessorIsExperimental) addAnnotation(annotation) }
         .addAnnotation(composableClass)
@@ -55,6 +56,6 @@ internal class PluralCatalogWriter(
         .addStatement(statementFormat, *statementArgs.toTypedArray())
         .build()
 
-    return addFunction(function)
+    return Member.Function(function)
   }
 }

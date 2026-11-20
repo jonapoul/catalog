@@ -2,10 +2,10 @@
 
 package dev.jonpoulton.catalog.gradle.internal.writer
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.internal.ResourceEntry
@@ -17,9 +17,10 @@ internal class StringArrayCatalogWriter(
 ) : CatalogWriter<ResourceEntry.XmlItem.StringArray>() {
   private val stringArrayResourceMember by lazy { resourceAccessor("stringArrayResource") }
 
-  override fun TypeSpec.Builder.addResource(
+  override fun buildMember(
     resource: ResourceEntry.XmlItem.StringArray,
-  ): TypeSpec.Builder {
+    receiver: ClassName?,
+  ): Member {
     val statementArgs = arrayOf(stringArrayResourceMember, rClass, resource.name)
     val statementFormat = "return %M(%T.array.%L)"
 
@@ -32,8 +33,9 @@ internal class StringArrayCatalogWriter(
         .addStatement(statementFormat, *statementArgs)
         .build()
 
-    return addProperty(
+    return Member.Property(
       PropertySpec.builder(config.nameTransform(resource.name), stringArrayType)
+        .receiverIfSet(receiver)
         .addKdoc(resource)
         .addInternalIfConfigured()
         .mutable(false)
